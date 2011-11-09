@@ -9,7 +9,8 @@
 
 						-1- General Info ---
 
-PyTouch is a gtk clone of freeware program Pytacz Master written in Python.
+PyTouch is a gtk clone of freeware program Pytacz Master i(PM) written in
+Python.
 
 PyTouch is created to ask questions on various topics based on a test that
 you or somebody else creates. It is designed for you to remember all the
@@ -22,27 +23,11 @@ to implement the most important features along with test editor.
 
 						-2- Example of test ---
 
-Here's how correct common PM test looks like:
+It's available in tests/test.txt
 
---------
-
-[Kolumny]
-1=First column name
-2=Second column name
-
-[Dane]
-run away€=€leave quickly to avoid trouble/danger
-come on€=€hurry up/make an effort
-clam up€=€refuse to say anything
-ring up€=€telephone sb
-brake up€=€end a relationship
-catch up€=€reach sb ahead of one, by hurrying
-crack up€=€have a nervous brakedown
-
---------
-                           
 It uses native files of PM cause I wanted it to be compatible with the Windows
-version.
+version. I'm experiencing some trouble (I guess with encoding) so it's not
+really possible to easily make your own tests now without PM.
 
 
 						-3-	Launching ---
