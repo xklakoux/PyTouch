@@ -2,5 +2,50 @@
 ******************** PyTouch **********************************************
 ***************************************************************************
 
+1. General Info
+2. Example of PM test
+3. Launching
+
+
+						-1- General Info ---
+
+PyTouch is a gtk clone of freeware program Pytacz Master written in Python.
+
+PyTouch is created to ask questions on various topics based on a test that
+you or somebody else creates. It is designed for you to remember all the
+things in your test.
+
+The main goal for me was to make similar program working with linux without
+need to use wine. It probably won't have so many features as PM, but i plan
+to implement the most important features along with test editor.
+
+
+						-2- Example of test ---
+
+Here's how correct common PM test looks like:
+
+--------
+
+[Kolumny]
+1=First column name
+2=Second column name
+
+[Dane]
+run away¤=¤leave quickly to avoid trouble/danger
+come on¤=¤hurry up/make an effort
+clam up¤=¤refuse to say anything
+ring up¤=¤telephone sb
+brake up¤=¤end a relationship
+catch up¤=¤reach sb ahead of one, by hurrying
+crack up¤=¤have a nervous brakedown
+
+--------
+                           
+It uses native files of PM cause I wanted it to be compatible with the Windows
+version.
+
+
+						-3-	Launching ---
+
 Launch it by simple running
 $ python pytouch.py
