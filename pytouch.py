@@ -36,13 +36,14 @@ class Base:
     self.labeltest.set_text(self.ltdialog.filename.split("/")[-1]) #show only the filename
     self.wordsrev = []
     self.words = self.ltdialog.words
+    #self.words.voc = self.ltdialog.voctolearn
     self.wordslen = len(self.words.voc)
     self.label1.set_text(self.words.col1)
     self.label2.set_text(self.words.col2)
     self.start_test()
 
   def edit_callback(self,widget,data=None):
-    pass
+    pass  
 
   def start_test(self):
     self.labelrem.set_text(str(len(self.words.voc)) + "("+ str(len(self.wordsrev)) +")")
@@ -60,7 +61,13 @@ class Base:
     self.showed.show()
 
   def sett_callback(self,widget,data=None):
-    pass
+    self.dialogsett = gen.DialogSett(self.settings)
+    response = self.dialogsett.window.run()
+    if response == gtk.RESPONSE_OK:
+      self.settings['polish'] = self.dialogsett.polishbutton.get_active()
+      self.settings['case'] = self.dialogsett.casebutton.get_active()
+      self.settings['white'] = self.dialogsett.whitebutton.get_active()
+    self.dialogsett.window.destroy()
 
   def its_done(self):
     if not len(self.words.voc):    #if there are no other words
@@ -76,7 +83,7 @@ class Base:
         self.guessed.show()
 
   def check_callback(self,widget,data=None):
-    if self.words.check(self.guessed.get_text(),self.words.voc[self.ix][self.mode-1]): #1 if self.mode is 0 and opposite
+    if self.words.check(self.guessed.get_text(),self.words.voc[self.ix][self.mode-1], self.settings): #1 if self.mode is 0 and opposite
       self.words.voc.pop(self.ix)
       self.good+=1
       self.labelgood.set_text(str(self.good)) 
@@ -117,7 +124,7 @@ class Base:
     self.start_test()
 
   def __init__(self):
-
+    self.settings = {'polish':True,'case':True,'white':True}
     self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
     self.window.set_size_request(400,440)
     self.window.set_border_width(10)
@@ -199,7 +206,6 @@ class Base:
     boxHFC.pack_start(boxFC, True, True, 0)
     boxHFC.pack_end(self.radio_button, False, False, 0)
 
-
     boxHSC=gtk.HBox(False, 0)
     boxSC=gtk.VBox(False, 0)
     boxSC.show()
@@ -221,7 +227,6 @@ class Base:
     self.radio_button1.show()
     boxHSC.pack_start(boxSC,True,True,0)
     boxHSC.pack_end(self.radio_button1, False, False, 0)
-    
     
     box2.pack_start(boxHFC,False,False,5)
     box2.pack_start(boxHSC,False,False,5)
@@ -254,7 +259,6 @@ class Base:
     box3.show()
     box2.pack_start(box3,False,False,5)
     
-    
     label = gtk.Label('REMEMBER');
     label.show()
     box2.pack_start(label,False,True,0)
@@ -266,7 +270,6 @@ class Base:
     self.entryRem.set_sensitive(False)
     self.entryRem.show()
     box2.pack_start(self.entryRem,False,False,0)
-
 
     separator = gtk.HSeparator()
     box2.pack_start(separator,False,False,20)
@@ -307,7 +310,6 @@ class Base:
     box4.pack_end(eventbox,False,True,0)
     eventbox.add(self.labelbad)
 
-
     box4.show()
     box2.pack_start(box4,False,False,10)
     
@@ -327,6 +329,7 @@ class Base:
     box2.show()
     self.window.show() 
     self.words=[]
+
 def main():
     gtk.main()
     return 0

@@ -9,13 +9,15 @@ import gen
 
 
 class LoadTest():
-  def check_sb(self,cell,path,model):
-    #self.treeview.get_selection().select_all()
-    print self.treeview.get_selection().count_selected_rows()
-    #for mod,sel in self.treeview.get_selection().get_selected_rows():
-      #mod[sel][0] = not mod[sel][0]
+  def check_cb(self,cell,path,model):
+    self.liststore[path][0] = not self.liststore[path][0]
+
+  def row_activated_cb(self,cell,path,model):
+    for sel in self.rows[1]:
+      self.liststore[sel][0] = not self.liststore[sel][0]
 
   def start_cb(self,widget,data=None):
+    self.words.voc = [(two,three) for (one,two,three) in self.liststore if one==True] 
     self.window.hide()
 
   def load_cb(self,widget,data=None):
@@ -42,8 +44,8 @@ class LoadTest():
         self.make_table(self.words.voc)
       else:
         self.liststore.clear()
-        for (first,two) in self.words.voc:
-          self.liststore.append((True,first,two))
+        for (one,two) in self.words.voc:
+          self.liststore.append((True,one,two))
       self.startbutton.set_sensitive(True)
     elif response == gtk.RESPONSE_CANCEL:
       self.filename = None
@@ -54,6 +56,10 @@ class LoadTest():
     self.check_sb(self.celltoggle, iter, self.liststore)
     #iter = self.liststore.iter_next(iter)
 
+  def changed_cb(self,widget):
+    self.rows = self.newselect
+    self.newselect = self.selection.get_selected_rows()
+
   def make_table(self,words):
     self.liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
 
@@ -61,15 +67,18 @@ class LoadTest():
       self.liststore.append((True, first, two))
     self.iter = self.liststore.get_iter_first()
     self.treeview = gtk.TreeView(self.liststore)
-    self.treeview.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+    self.selection = self.treeview.get_selection()
+    self.selection.set_mode(gtk.SELECTION_MULTIPLE)
+    self.selection.connect('changed',self.changed_cb)
+    self.newselect = []
     self.treeview.set_rubber_banding(True)
     self.celltext = gtk.CellRendererText() 
     self.celltext2 = gtk.CellRendererText()
     self.celltoggle = gtk.CellRendererToggle()
     self.celltoggle.set_property('activatable', True)
-    self.celltoggle.connect('toggled', self.check_sb, self.liststore)
+    self.celltoggle.connect('toggled', self.check_cb, self.liststore)
     self.treeview.set_events(gtk.gdk.KEY_PRESS_MASK)
-    self.treeview.connect('select-cursor-row', self.check_sb)
+    self.treeview.connect('row_activated', self.row_activated_cb)
 
     self.tvcolumn1 = gtk.TreeViewColumn('Check')
     self.tvcolumn1.pack_start(self.celltoggle, True)
