@@ -51,11 +51,6 @@ class LoadTest():
       self.filename = None
     dialog.destroy()
 
-  def evented(self,model,iter,path):
-    #if gtk.gdk.keyval_name(event.keyval) == 'space':
-    self.check_sb(self.celltoggle, iter, self.liststore)
-    #iter = self.liststore.iter_next(iter)
-
   def changed_cb(self,widget):
     self.rows = self.newselect
     self.newselect = self.selection.get_selected_rows()
@@ -100,7 +95,7 @@ class LoadTest():
     self.window.vbox.pack_start(self.scrolled, True, True, 10)
     self.window.show_all()
 
-  def __init__(self,words):
+  def __init__(self):
 
     self.window = gtk.Dialog()
     self.window.set_modal(True)
@@ -132,9 +127,3 @@ class LoadTest():
     
     self.window.vbox.pack_start(self.startbutton,False,False,10)
     box.show()
-    
-    if words:
-      self.make_table(words)
-
-
-

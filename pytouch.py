@@ -16,6 +16,8 @@ class Base:
     if not 'ltdialog' in vars(self):
       self.ltdialog = loadtest.LoadTest(self.words)
     self.ltdialog.window.run()
+    self.oncemore.set_sensitive(True)
+    self.finish.set_sensitive(True)
     self.begin()
     
   def load_test(self):
@@ -103,10 +105,11 @@ class Base:
     self.start_test() 
 
   def finish_callback(self,widget,data=None):
-    pass
+    pass 
 
   def oncemore_callback(self,widget,data=None):
-    pass
+    self.words.voc = [(two,three) for (one,two,three) in self.ltdialog.liststore if one==True]
+    self.begin() 
 
   def radio_callback(self,widget,data=None):
     self.guessed.set_sensitive(True)
@@ -126,13 +129,13 @@ class Base:
   def __init__(self):
     self.settings = {'polish':True,'case':True,'white':True}
     self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    self.window.set_size_request(400,440)
+    self.window.set_size_request(400,-1)
     self.window.set_border_width(10)
     self.window.set_resizable(False)
     self.window.set_title('PyTouch')
     self.window.connect('destroy',lambda wid: gtk.main_quit())
     self.window.connect('delete_event',lambda a1,a2:gtk.main_quit())
-    box2=gtk.VBox(False,0)
+    mainbox=gtk.VBox(False,0)
     box1=gtk.HBox(False,0)
     box1.set_border_width(2)
 
@@ -165,12 +168,12 @@ class Base:
 
     separator = gtk.HSeparator()
     separator.show()
-    box2.pack_start(box1,False,False,0)
-    box2.pack_start(separator,False,False,5)
+    mainbox.pack_start(box1,False,False,0)
+    mainbox.pack_start(separator,False,False,5)
 
     self.labeltest = gtk.Label('No test set');
     self.labeltest.show()
-    box2.pack_start(self.labeltest,False,True,0)
+    mainbox.pack_start(self.labeltest,False,True,0)
 
     self.progressbar=gtk.ProgressBar(adjustment=None)
     self.progressbar.set_fraction(0)
@@ -179,8 +182,8 @@ class Base:
     self.progressbar.show()
     separator = gtk.HSeparator()
     separator.show()
-    box2.pack_start(self.progressbar,False,True,0)
-    box2.pack_start(separator,False,False,5)
+    mainbox.pack_start(self.progressbar,False,True,0)
+    mainbox.pack_start(separator,False,False,5)
    
     boxHFC=gtk.HBox(False,0)
 
@@ -228,8 +231,8 @@ class Base:
     boxHSC.pack_start(boxSC,True,True,0)
     boxHSC.pack_end(self.radio_button1, False, False, 0)
     
-    box2.pack_start(boxHFC,False,False,5)
-    box2.pack_start(boxHSC,False,False,5)
+    mainbox.pack_start(boxHFC,False,False,5)
+    mainbox.pack_start(boxHSC,False,False,5)
     
     box3 = gtk.HBox(False,0)
     checkbox = gtk.HBox(True,5)
@@ -238,30 +241,32 @@ class Base:
     checkbox.pack_start(self.checkbutton,False,False,0)
     self.checkbutton.set_sensitive(False)
     self.checkbutton.connect('clicked',self.check_callback)
-    box2.pack_start(checkbox, True,True,0) 
+    mainbox.pack_start(checkbox,False,False,0) 
     self.checkbutton.show()
-    button = gtk.Button()
+    self.oncemore = gtk.Button()
+    self.oncemore.set_sensitive(False)
     image = gtk.Image()
     image.show()
     image.set_from_file('gfx/oncemore.png')
-    button.connect('clicked',self.oncemore_callback)
-    button.add(image)
-    box3.pack_end(button,False,False,0)
-    button.show()
-    button = gtk.Button()
-    button.show()
+    self.oncemore.connect('clicked',self.oncemore_callback)
+    self.oncemore.add(image)
+    box3.pack_end(self.oncemore,False,False,0)
+    self.oncemore.show()
+    self.finish = gtk.Button()
+    self.finish.set_sensitive(False)
+    self.finish.show()
     image = gtk.Image()
     image.show()
     image.set_from_file('gfx/finish.png')
-    button.connect('clicked',self.finish_callback)
-    button.add(image)
-    box3.pack_end(button,False,False,0)
+    self.finish.connect('clicked',self.finish_callback)
+    self.finish.add(image)
+    box3.pack_end(self.finish,False,False,0)
     box3.show()
-    box2.pack_start(box3,False,False,5)
+    mainbox.pack_start(box3,False,False,0)
     
     label = gtk.Label('REMEMBER');
     label.show()
-    box2.pack_start(label,False,True,0)
+    mainbox.pack_start(label,False,True,0)
     self.entryRem = gtk.Entry(max=0)
     self.entryRem.set_max_length(100)
     self.entryRem.set_editable(False)
@@ -269,10 +274,10 @@ class Base:
     self.entryRem.insert_text('-')
     self.entryRem.set_sensitive(False)
     self.entryRem.show()
-    box2.pack_start(self.entryRem,False,False,0)
+    mainbox.pack_start(self.entryRem,False,False,0)
 
     separator = gtk.HSeparator()
-    box2.pack_start(separator,False,False,20)
+    mainbox.pack_start(separator,False,False,20)
     separator.show()
 
     box4 = gtk.HBox(True,5)
@@ -311,7 +316,7 @@ class Base:
     eventbox.add(self.labelbad)
 
     box4.show()
-    box2.pack_start(box4,False,False,10)
+    mainbox.pack_start(box4,False,False,10)
     
     box = gtk.HBox(True,0)
     label = gtk.Label('Remain')
@@ -322,11 +327,11 @@ class Base:
     box.pack_end(self.labelrem,False,False,0)
     box.show()
 
-    box2.pack_start(box,False,False,0)
+    mainbox.pack_start(box,False,False,0)
 
-    self.window.add(box2)
+    self.window.add(mainbox)
     
-    box2.show()
+    mainbox.show()
     self.window.show() 
     self.words=[]
 
