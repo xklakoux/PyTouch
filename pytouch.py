@@ -35,7 +35,10 @@ class Base:
     self.radio_button.set_sensitive(True)
     self.radio_button1.set_sensitive(True)
     self.checkbutton.set_sensitive(True)
-    self.labeltest.set_text(self.ltdialog.filename.split("/")[-1]) #show only the filename
+    if os.name == 'nt':
+      self.labeltest.set_text(self.ltdialog.filename.split("\\")[-1]) #show only the filename
+    else:
+      self.labeltest.set_text(self.ltdialog.filename.split("/")[-1]) #show only the filename
     self.wordsrev = []
     self.words = self.ltdialog.words
     #self.words.voc = self.ltdialog.voctolearn
