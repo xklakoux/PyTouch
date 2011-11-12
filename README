@@ -32,5 +32,4 @@ really possible to easily make your own tests now without PM.
 
 						-3-	Launching ---
 
-Launch it by simple running
-$ python pytouch.py
+Launch it by simple running pytouch.py file
