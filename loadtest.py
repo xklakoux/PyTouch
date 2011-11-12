@@ -99,7 +99,7 @@ class LoadTest():
       self.filename = 'Internet'
       self.words = gen.Checker(self.filename)
       self.entry.set_text('Internet')
-      if not 'liststore' in vars(self):
+      if not 'liststore' in vars(self):   #put it in the function
         self.make_table(self.words.voc)
       else:
         self.liststore.clear()

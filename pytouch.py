@@ -9,7 +9,6 @@ import gen
 import loadtest
 import random
 import os
-#from time import sleep
 
 class Base:
 
@@ -30,19 +29,17 @@ class Base:
     self.bad=0
     self.labelgood.set_text(str(self.good))          #delete old test remainders and put a new one
     self.labelbad.set_text(str(self.bad))
-    self.labelgood.show()
-    self.labelbad.show()
     self.guessed.set_sensitive(True)
     self.radio_button.set_sensitive(True)
     self.radio_button1.set_sensitive(True)
     self.checkbutton.set_sensitive(True)
+    self.finish.set_sensitive(True)
     if os.name == 'nt':
       self.labeltest.set_text(self.ltdialog.filename.split("\\")[-1]) #show only the filename
     else:
       self.labeltest.set_text(self.ltdialog.filename.split("/")[-1]) #show only the filename
     self.wordsrev = []
     self.words = self.ltdialog.words
-    #self.words.voc = self.ltdialog.voctolearn
     self.wordslen = len(self.words.voc)
     self.label1.set_text(self.words.col1)
     self.label2.set_text(self.words.col2)
@@ -51,12 +48,27 @@ class Base:
   def edit_callback(self,widget,data=None):
     pass  
 
+  def shut_down(self):
+    self.guessed.set_sensitive(False)
+    self.checkbutton.set_sensitive(False)
+    #self.oncemore.set_sensitive(False)
+    self.finish.set_sensitive(False)
+    self.guessed.set_text('')
+    self.showed.set_text('')
+    self.progressbar.set_fraction(0)
+    #self.good=0
+    #self.bad=0
+    #self.labelgood.set_text(str(self.good))          #delete old test remainders and put a new one
+    #self.labelbad.set_text(str(self.bad))
+    self.radio_button.set_sensitive(False)
+    self.radio_button1.set_sensitive(False)
+    self.labelrem.set_text(str(len(self.words.voc)) + "("+ str(len(self.wordsrev)) +")")
+
   def start_test(self):
     self.labelrem.set_text(str(len(self.words.voc)) + "("+ str(len(self.wordsrev)) +")")
     self.labelrem.show()
     if not self.words.voc:      #if there are no more words
-      self.checkbutton.set_sensitive(False)
-      self.checkbutton.show()
+      self.shut_down()
       return 0;
     self.checked = random.choice(self.words.voc)
     self.ix = self.words.voc.index(self.checked)  #index number for future marking (complete, revision)
@@ -86,7 +98,7 @@ class Base:
         #here it should wait a while but it cant
       else:
         self.guessed.set_sensitive(False)
-        self.guessed.show()
+        #self.guessed.show()
 
   def check_callback(self,widget,data=None):
     if self.words.check(self.guessed.get_text(),self.words.voc[self.ix][self.mode-1], self.settings): #1 if self.mode is 0 and opposite
@@ -100,16 +112,18 @@ class Base:
       self.bad+=1
       self.labelbad.set_text(str(self.bad))
       self.wordslen+=1
-      self.labelbad.show()
+      #self.labelbad.show()
       self.entryRem.set_text(self.wordsrev[-1][0] + " - " + self.wordsrev[-1][1])
     self.progressbar.set_fraction(float(self.good)/float(self.wordslen))
-    self.progressbar.show()
-    self.labelgood.show()
-    self.entryRem.show()
+    #self.progressbar.show()
+    #self.labelgood.show()
+    #self.entryRem.show()
     self.start_test() 
 
   def finish_callback(self,widget,data=None):
-    pass 
+    self.words.voc = []
+    self.wordsrev = []
+    self.shut_down()
 
   def oncemore_callback(self,widget,data=None):
     self.words.voc = [(two,three) for (one,two,three) in self.ltdialog.liststore if one==True]
