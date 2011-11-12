@@ -8,7 +8,8 @@ import gtk
 import gen
 import loadtest
 import random
-from time import sleep
+import os
+#from time import sleep
 
 class Base:
 

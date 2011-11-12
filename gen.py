@@ -53,8 +53,8 @@ class Checker:
 
   def fetch(self):
    
-    words=[]
-    while len(words)<20:
+    fromweb=[]
+    while len(fromweb)<20:
       a = random.randint(1,3000)
       f = urllib.urlopen('http://www.ang.pl/wotd/archiwum/%d' % a)
       lines = f.readlines()
@@ -69,10 +69,10 @@ class Checker:
           if not solution:
             continue
           two = solution.group(1)#.decode('windows-1250')
-          words.append((one,two))
+          fromweb.append((one,two))
         else:
           continue
-    return words 
+    return fromweb 
 
   def __init__(self,filename):
     if filename == 'Internet':
