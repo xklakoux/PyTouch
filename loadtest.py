@@ -131,6 +131,8 @@ class LoadTest():
     self.loadbutton.show()
     
     self.fromnet = gtk.Button('Fetch words from the Internet')
+    self.tooltips = gtk.Tooltips()
+    self.tooltips.set_tip(self.fromnet,'Fetch 20 polish-to-english pairs from ang.pl')
     self.fromnet.connect('clicked', self.fetchfromnet_cb)
     self.fromnet.show()
 
@@ -146,3 +148,7 @@ class LoadTest():
     
     self.window.vbox.pack_start(self.startbutton,False,False,10)
     box.show()
+
+    #in case nothing happened
+    self.filename = 'No test set'
+    self.words = gen.Checker(None)

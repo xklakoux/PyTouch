@@ -12,13 +12,14 @@ import os
 
 class Base:
 
-  def test_callback(self,widget,data=None):
+  def load_test_cb(self,widget,data=None):
     if not 'ltdialog' in vars(self):
       self.ltdialog = loadtest.LoadTest()
     self.ltdialog.window.run()
-    self.oncemore.set_sensitive(True)
-    self.finish.set_sensitive(True)
-    self.begin()
+    if self.ltdialog.words.voc:
+      self.oncemore.set_sensitive(True)
+      self.finish.set_sensitive(True)
+      self.begin()
     
   def load_test(self):
     pass 
@@ -56,6 +57,7 @@ class Base:
     self.guessed.set_text('')
     self.showed.set_text('')
     self.progressbar.set_fraction(0)
+    self.entryRem.set_text('-')
     #self.good=0
     #self.bad=0
     #self.labelgood.set_text(str(self.good))          #delete old test remainders and put a new one
@@ -157,14 +159,18 @@ class Base:
     box1=gtk.HBox(False,0)
     box1.set_border_width(2)
 
+    self.tooltips = gtk.Tooltips()
+
     button = gtk.Button()
     image = gtk.Image()
     image.set_from_file('gfx/test.png')
     image.show()
-    button.connect('clicked',self.test_callback)
+    button.connect('clicked',self.load_test_cb)
     box1.pack_start(button,False,False,0)
     button.add(image)
+    self.tooltips.set_tip(button,"Load test")
     button.show()
+
     button = gtk.Button()
     image = gtk.Image()
     image.set_from_file('gfx/edit.png')
@@ -172,7 +178,10 @@ class Base:
     button.connect('clicked',self.edit_callback)
     box1.pack_start(button,False,False,0)
     button.add(image)
+    self.tooltips.set_tip(button,"Test editor")
+    button.set_sensitive(False)
     button.show()
+
     button = gtk.Button()
     image = gtk.Image()
     image.set_from_file('gfx/sett.png')
@@ -180,6 +189,7 @@ class Base:
     button.connect('clicked',self.sett_callback)
     box1.pack_start(button,False,False,0)
     button.add(image)
+    self.tooltips.set_tip(button,"Settings")
     button.show()
 
     box1.show()
@@ -224,6 +234,7 @@ class Base:
     self.mode = 1
     self.radio_button.set_sensitive(False)
     self.radio_button.show()
+    self.tooltips.set_tip(self.radio_button,"Ask me about this column")
     boxHFC.pack_start(boxFC, True, True, 0)
     boxHFC.pack_end(self.radio_button, False, False, 0)
 
@@ -246,6 +257,7 @@ class Base:
     self.radio_button1.connect('toggled',self.radio1_callback)
     self.radio_button1.set_sensitive(False)
     self.radio_button1.show()
+    self.tooltips.set_tip(self.radio_button1,"Ask me about this column")
     boxHSC.pack_start(boxSC,True,True,0)
     boxHSC.pack_end(self.radio_button1, False, False, 0)
     
@@ -255,12 +267,14 @@ class Base:
     box3 = gtk.HBox(False,0)
     checkbox = gtk.HBox(True,5)
     checkbox.show()
+
     self.checkbutton = gtk.Button('    Check    ')
     checkbox.pack_start(self.checkbutton,False,False,0)
     self.checkbutton.set_sensitive(False)
     self.checkbutton.connect('clicked',self.check_callback)
     mainbox.pack_start(checkbox,False,False,0) 
     self.checkbutton.show()
+
     self.oncemore = gtk.Button()
     self.oncemore.set_sensitive(False)
     image = gtk.Image()
@@ -269,9 +283,12 @@ class Base:
     self.oncemore.connect('clicked',self.oncemore_callback)
     self.oncemore.add(image)
     box3.pack_end(self.oncemore,False,False,0)
+    self.tooltips.set_tip(self.oncemore,"Restart")
     self.oncemore.show()
+
     self.finish = gtk.Button()
     self.finish.set_sensitive(False)
+    self.tooltips.set_tip(self.finish,"Finish")
     self.finish.show()
     image = gtk.Image()
     image.show()
@@ -349,9 +366,10 @@ class Base:
 
     self.window.add(mainbox)
     
+
     mainbox.show()
     self.window.show() 
-    self.words=[]
+    #self.words=[]
 
 def main():
     gtk.main()

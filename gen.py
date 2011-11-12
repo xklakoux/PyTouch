@@ -11,6 +11,16 @@ import random
 class Checker:
 
   def load_voc(self,filename):
+    if filename == 'Internet':    #vocabulary from internet
+      self.voc = self.fetch() 
+      self.col1 = 'English'
+      self.col2 = 'Polish'
+      return
+    elif not filename:            #nothing happened
+      self.voc = []
+      self.col1 = 'First Column'
+      self.col2 = 'Second Column'
+      return
     f = open(filename,'rU')
     lines = f.readlines()
     self.voc = []
@@ -19,7 +29,7 @@ class Checker:
       if a:
         self.voc.append((a.group(1).decode('windows-1250'),a.group(2).decode('windows-1250')))
     f.close()
-    return self.voc
+    self.load_colnames(filename)
   
   def load_colnames(self,filename):
     f = open(filename,'rU')
@@ -36,6 +46,7 @@ class Checker:
     return (None,None)
 
   def check(self,guessed,shouldbe,settings):
+    u'''Checks if the answer is correct'''
     translations = [('ą','a'),('ć','c'),('ę','e'),('ł','l'),('ń','n'),('ó','o'),('ś','s'),('ź','z'),('ż','z')]
     if settings['polish'] == True:               #polish signs don't matter
       for pol,lat in translations:
@@ -52,7 +63,7 @@ class Checker:
     return False
 
   def fetch(self):
-   
+    u'''Fetches 20 words from www.ang.pl''' 
     fromweb=[]
     while len(fromweb)<20:
       a = random.randint(1,3000)
@@ -64,26 +75,24 @@ class Checker:
           solution = re.search('<b>(.+)</b>',lines[ind+4])
           if not solution:
             continue
-          one = solution.group(1)#.decode('windows-1250')
+          one = solution.group(1)
           solution = re.search('<b>(.+)</b>',lines[ind+17])
           if not solution:
             continue
-          two = solution.group(1)#.decode('windows-1250')
+          two = solution.group(1)
           fromweb.append((one,two))
         else:
           continue
     return fromweb 
 
   def __init__(self,filename):
-    if filename == 'Internet':
-      self.voc = self.fetch() 
-      self.col1 = 'English'
-      self.col2 = 'Polish'
-    else:
+
       self.load_voc(filename)
-      self.load_colnames(filename)
+    
 
 class DialogSett:
+  u'''A Class to handle Settings Dialog'''
+
   def __init__(self,state):
     self.window = gtk.Dialog('Settings',None,gtk.DIALOG_MODAL,(gtk.STOCK_OK,gtk.RESPONSE_OK))
     self.window.connect('destroy',lambda hid:self.window.hide())
@@ -103,6 +112,3 @@ class DialogSett:
     self.whitebutton.show()
     self.window.vbox.pack_start(self.whitebutton,False,False,0)
     
-
-
-
