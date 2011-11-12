@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
+
 import pygtk
 pygtk.require('2.0')
 import gtk
+import urllib
 import re
+import random
 
 class Checker:
 
@@ -48,9 +51,37 @@ class Checker:
       return True
     return False
 
+  def fetch(self):
+   
+    words=[]
+    while len(words)<20:
+      a = random.randint(1,3000)
+      f = urllib.urlopen('http://www.ang.pl/wotd/archiwum/%d' % a)
+      lines = f.readlines()
+      for (ind,line) in enumerate(lines):
+        solution = re.search('<b>WORD OF THE DAY</b>',line)
+        if solution:
+          solution = re.search('<b>(.+)</b>',lines[ind+4])
+          if not solution:
+            continue
+          one = solution.group(1)#.decode('windows-1250')
+          solution = re.search('<b>(.+)</b>',lines[ind+17])
+          if not solution:
+            continue
+          two = solution.group(1)#.decode('windows-1250')
+          words.append((one,two))
+        else:
+          continue
+    return words 
+
   def __init__(self,filename):
-    self.load_voc(filename)
-    (self.col1,selfcol2)=self.load_colnames(filename)
+    if filename == 'Internet':
+      self.voc = self.fetch() 
+      self.col1 = 'English'
+      self.col2 = 'Polish'
+    else:
+      self.load_voc(filename)
+      self.load_colnames(filename)
 
 class DialogSett:
   def __init__(self,state):
@@ -71,3 +102,7 @@ class DialogSett:
     self.whitebutton.set_active(state['white'])
     self.whitebutton.show()
     self.window.vbox.pack_start(self.whitebutton,False,False,0)
+    
+
+
+

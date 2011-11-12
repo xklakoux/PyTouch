@@ -95,6 +95,18 @@ class LoadTest():
     self.window.vbox.pack_start(self.scrolled, True, True, 10)
     self.window.show_all()
 
+  def fetchfromnet_cb(self,widget,data=None):
+      self.filename = 'Internet'
+      self.words = gen.Checker(self.filename)
+      self.entry.set_text('Internet')
+      if not 'liststore' in vars(self):
+        self.make_table(self.words.voc)
+      else:
+        self.liststore.clear()
+        for (one,two) in self.words.voc:
+          self.liststore.append((True,one,two))
+      self.startbutton.set_sensitive(True)
+
   def __init__(self):
 
     self.window = gtk.Dialog()
@@ -108,6 +120,7 @@ class LoadTest():
     
     box = gtk.HBox(False, 0)
     self.window.vbox.pack_start(box, False, False, 10)
+
     self.entry = gtk.Entry()
     self.entry.set_sensitive(False)
     self.entry.set_alignment(1.0)
@@ -117,6 +130,12 @@ class LoadTest():
     self.loadbutton.connect('clicked', self.load_cb)
     self.loadbutton.show()
     
+    self.fromnet = gtk.Button('Fetch words from the Internet')
+    self.fromnet.connect('clicked', self.fetchfromnet_cb)
+    self.fromnet.show()
+
+    self.window.vbox.pack_start(self.fromnet,False,False,10)
+
     box.pack_start(self.entry,True,True,10)
     box.pack_end(self.loadbutton,False,False,10)
     

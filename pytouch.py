@@ -14,7 +14,7 @@ class Base:
 
   def test_callback(self,widget,data=None):
     if not 'ltdialog' in vars(self):
-      self.ltdialog = loadtest.LoadTest(self.words)
+      self.ltdialog = loadtest.LoadTest()
     self.ltdialog.window.run()
     self.oncemore.set_sensitive(True)
     self.finish.set_sensitive(True)
