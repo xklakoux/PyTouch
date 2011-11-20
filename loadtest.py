@@ -6,6 +6,7 @@ pygtk.require('2.0')
 import gtk
 import gobject
 import gen
+import mythread
 
 
 class LoadTest():
@@ -56,56 +57,68 @@ class LoadTest():
     self.newselect = self.selection.get_selected_rows()
 
   def make_table(self,words):
-    self.liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
+    if not 'liststore' in vars(self):
+      self.liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
+      
+      for (first,two) in words:
+        
+        self.liststore.append((True, first, two))
+      self.iter = self.liststore.get_iter_first()
+      self.treeview = gtk.TreeView(self.liststore)
+      self.selection = self.treeview.get_selection()
+      self.selection.set_mode(gtk.SELECTION_MULTIPLE)
+      self.selection.connect('changed',self.changed_cb)
+      self.newselect = []
+      self.treeview.set_rubber_banding(True)
+      self.celltext = gtk.CellRendererText() 
+      self.celltext2 = gtk.CellRendererText()
+      self.celltoggle = gtk.CellRendererToggle()
+      self.celltoggle.set_property('activatable', True)
+      self.celltoggle.connect('toggled', self.check_cb, self.liststore)
+      self.treeview.set_events(gtk.gdk.KEY_PRESS_MASK)
+      self.treeview.connect('row_activated', self.row_activated_cb)
 
-    for (first,two) in words:
-      self.liststore.append((True, first, two))
-    self.iter = self.liststore.get_iter_first()
-    self.treeview = gtk.TreeView(self.liststore)
-    self.selection = self.treeview.get_selection()
-    self.selection.set_mode(gtk.SELECTION_MULTIPLE)
-    self.selection.connect('changed',self.changed_cb)
-    self.newselect = []
-    self.treeview.set_rubber_banding(True)
-    self.celltext = gtk.CellRendererText() 
-    self.celltext2 = gtk.CellRendererText()
-    self.celltoggle = gtk.CellRendererToggle()
-    self.celltoggle.set_property('activatable', True)
-    self.celltoggle.connect('toggled', self.check_cb, self.liststore)
-    self.treeview.set_events(gtk.gdk.KEY_PRESS_MASK)
-    self.treeview.connect('row_activated', self.row_activated_cb)
+      self.tvcolumn1 = gtk.TreeViewColumn('Check')
+      self.tvcolumn1.pack_start(self.celltoggle, True)
+      self.tvcolumn1.add_attribute(self.celltoggle, 'active',0)
 
-    self.tvcolumn1 = gtk.TreeViewColumn('Check')
-    self.tvcolumn1.pack_start(self.celltoggle, True)
-    self.tvcolumn1.add_attribute(self.celltoggle, 'active',0)
+      self.treeview.append_column(self.tvcolumn1)
+      self.tvcolumn2 = gtk.TreeViewColumn(self.words.col1)
+      self.tvcolumn2.pack_start(self.celltext, True)
+      self.tvcolumn2.add_attribute(self.celltext, 'text', 1)
 
-    self.treeview.append_column(self.tvcolumn1)
-    self.tvcolumn2 = gtk.TreeViewColumn(self.words.col1)
-    self.tvcolumn2.pack_start(self.celltext, True)
-    self.tvcolumn2.add_attribute(self.celltext, 'text', 1)
-
-    self.treeview.append_column(self.tvcolumn2)
-    self.tvcolumn3 = gtk.TreeViewColumn(self.words.col2)
-    self.tvcolumn3.pack_start(self.celltext2, True)
-    self.tvcolumn3.add_attribute(self.celltext2, 'text', 2)
-    self.treeview.append_column(self.tvcolumn3)
-    self.scrolled = gtk.ScrolledWindow()
-    self.scrolled.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-    self.scrolled.add_with_viewport(self.treeview)
-    self.window.vbox.pack_start(self.scrolled, True, True, 10)
-    self.window.show_all()
+      self.treeview.append_column(self.tvcolumn2)
+      self.tvcolumn3 = gtk.TreeViewColumn(self.words.col2)
+      self.tvcolumn3.pack_start(self.celltext2, True)
+      self.tvcolumn3.add_attribute(self.celltext2, 'text', 2)
+      self.treeview.append_column(self.tvcolumn3)
+      self.scrolled = gtk.ScrolledWindow()
+      self.scrolled.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+      self.scrolled.add_with_viewport(self.treeview)
+      self.window.vbox.pack_start(self.scrolled, True, True, 10)
+      self.window.show_all()
+    else:
+      self.liststore.clear()
+      for (one,two) in words:
+        self.liststore.append((True,one,two))
+    self.startbutton.set_sensitive(True)
 
   def fetchfromnet_cb(self,widget,data=None):
-      self.filename = 'Internet'
-      self.words = gen.Checker(self.filename)
-      self.entry.set_text('Internet')
-      if not 'liststore' in vars(self):   #put it in the function
-        self.make_table(self.words.voc)
-      else:
-        self.liststore.clear()
-        for (one,two) in self.words.voc:
-          self.liststore.append((True,one,two))
-      self.startbutton.set_sensitive(True)
+    #self.filename = 'Internet'
+    #self.dialog = gtk.MessageDialog(self.window,message_format='Fetching words...\nWait a while')
+    #self.thread = mythread.MyThread(self.dialog)
+    #self.words.voc = self.thread.start()
+    #self.entry.set_text('Internet')
+    #self.dialog.connect('destroy',self.destr_messdialog_cb)
+    #self.dialog.run()
+    self.words = []
+    self.words = gen.Checker('Internet')
+    self.make_table(self.words.voc)
+
+  def destr_messdialog_cb(self,widget,data=None):
+    self.words.voc = self.thread.words.voc
+    self.make_table(self.words.voc)
+    self.thread.quit = True
 
   def __init__(self):
 
@@ -132,7 +145,7 @@ class LoadTest():
     
     self.fromnet = gtk.Button('Fetch words from the Internet')
     self.tooltips = gtk.Tooltips()
-    self.tooltips.set_tip(self.fromnet,'Fetch 20 polish-to-english pairs from ang.pl')
+    self.tooltips.set_tip(self.fromnet,'Fetch 20 polish-to-english pairs')
     self.fromnet.connect('clicked', self.fetchfromnet_cb)
     self.fromnet.show()
 

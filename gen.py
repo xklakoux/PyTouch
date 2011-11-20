@@ -23,7 +23,6 @@ class Checker:
       return
     f = open(filename,'rU')
     lines = f.readlines()
-    self.voc = []
     for line in lines:
       a = re.search('(.*)\xa4=\xa4(.*)',line)
       if a:
@@ -86,8 +85,8 @@ class Checker:
     return fromweb 
 
   def __init__(self,filename):
-
-      self.load_voc(filename)
+    self.voc = []
+    self.load_voc(filename)
     
 
 class DialogSett:

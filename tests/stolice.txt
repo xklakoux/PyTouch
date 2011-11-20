@@ -1,0 +1,21 @@
+[Informacje]
+Autor=Japcok
+Opis=Stolice Europy.
+Ostatnia modyfikacja=21.08.2005
+
+[Kolumny]
+1=Pañstwo
+2=Stolica
+
+[Do zapamiêtania]
+S³ówko1=Tak
+Miêdzy=-
+S³ówko2=Tak
+
+[Dane]
+Albania¤=¤Tirana
+Andora¤=¤Andora
+Austria¤=¤Wiedeñ
+Belgia¤=¤Bruksela
+Bia³oruœ¤=¤Miñsk
+Boœnia i Hercegowina¤=¤Sarajewo

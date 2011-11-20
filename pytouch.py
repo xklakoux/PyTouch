@@ -9,6 +9,7 @@ import gen
 import loadtest
 import random
 import os
+import edit
 
 class Base:
 
@@ -47,7 +48,7 @@ class Base:
     self.start_test()
 
   def edit_callback(self,widget,data=None):
-    pass  
+    editor = edit.Editor()
 
   def shut_down(self):
     self.guessed.set_sensitive(False)
@@ -179,7 +180,6 @@ class Base:
     box1.pack_start(button,False,False,0)
     button.add(image)
     self.tooltips.set_tip(button,"Test editor")
-    button.set_sensitive(False)
     button.show()
 
     button = gtk.Button()
@@ -378,4 +378,3 @@ def main():
 if __name__ == '__main__':
   Base()
   main()
-
