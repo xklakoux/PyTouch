@@ -6,7 +6,6 @@ pygtk.require('2.0')
 import gtk
 import gobject
 import gen
-import mythread
 
 
 class LoadTest():
