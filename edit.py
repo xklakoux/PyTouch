@@ -33,7 +33,6 @@ class Editor:
     response = dialog.run()
     if response == gtk.RESPONSE_OK:
       self.filename = dialog.get_filename()
-      #self.entry.set_text(self.filename) #show only the filename
       self.words = gen.Checker(self.filename)
       if not 'liststore' in vars(self):
         self.make_table(self.words.voc)
@@ -41,7 +40,6 @@ class Editor:
         self.liststore.clear()
         for (one,two) in self.words.voc:
           self.liststore.append((True,one,two))
-      #self.startbutton.set_sensitive(True)
     elif response == gtk.RESPONSE_CANCEL:
       self.filename = None
     dialog.destroy()
@@ -65,6 +63,7 @@ class Editor:
       self.celltext3 = gtk.CellRendererText()
       #self.celltoggle.connect('toggled', self.check_cb, self.liststore)
       self.treeview.set_events(gtk.gdk.KEY_PRESS_MASK)
+      self.treeview.connect('row_activated', self.edit_cb)
 
       self.tvcolumn1 = gtk.TreeViewColumn('Num')
       self.tvcolumn1.pack_start(self.celltext3, True)
@@ -93,26 +92,67 @@ class Editor:
     #self.startbutton.set_sensitive(True)
 
   def new_test_cb(self, widget, data=None):
-    if 'liststore' in vars(self):
-      del self.liststore
-    self.words.voc = [('','')]
-    self.make_table(self.words.voc)
-    
-  def save_cb(self, widget, data=None):
-    pass
+    self.words.voc=[]
+    self.liststore.clear()
 
+    
   def save_as_cb(self, widget, data=None):
-    pass
+    dialog = gtk.FileChooserDialog("Save as..",None,gtk.FILE_CHOOSER_ACTION_SAVE,\
+    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+    dialog.set_default_response(gtk.RESPONSE_OK)
+    dialog.set_modal(True)
+
+    filter = gtk.FileFilter()
+    filter.set_name("Pytacz Master Text Files")
+    filter.add_pattern("*.txt")
+    dialog.add_filter(filter)
+
+    filter = gtk.FileFilter()
+    filter.set_name("All files")
+    filter.add_pattern("*")
+    dialog.add_filter(filter)
+
+    response = dialog.run()
+    if response == gtk.RESPONSE_OK:
+      self.filename = dialog.get_filename()
+      self.save_cb(self.liststore,self.filename)
+    elif response == gtk.RESPONSE_CANCEL:
+      self.filename = None
+    dialog.destroy()
+
+  def save_cb(self, widget, data=None):
+    if self.filename:
+      f = open(self.filename,'w')
+      f.write('''[Informacje]
+Autor=
+Opis=
+Ostatnia modyfikacja=
+
+[Kolumny]
+1=
+2=
+
+[Do zapamiêtania]
+S³ówko1=Tak
+Miêdzy=-
+S³ówko2=Tak
+
+[Dane]\r\n''')
+      for (a,b,c) in self.liststore:
+        f.write('{}\xa4=\xa4{}\r\n'.format(b.decode('windows-1250'),c))
+      f.close()
+    else:
+      self.save_as_cb(self.treeview)
 
   def load_cb(self, widget, data=None):
     pass
 
   def new_cb(self, widget, data=None):
     self.words_dialog('','')  
+    self.dialog.set_default_response(gtk.RESPONSE_OK)
     response = self.dialog.run()
-    if response == gtk.RESPONSE_ACCEPT:
-      if not 'liststore' in vars(self):
-        self.new_test_cb(None) # i've just put there anything
+    if response == gtk.RESPONSE_OK:
+      print self.entry1.get_text()
       self.liststore.append((0,self.entry1.get_text(),self.entry2.get_text()))
       self.dialog.destroy()
       self.new_cb(None)
@@ -120,24 +160,23 @@ class Editor:
       self.dialog.destroy()
     
 
-  def edit_cb(self, widget, data=None):
+  def edit_cb(self, widget, data=None,forcedbytreeview=None):
     (a,pathto) = self.selection.get_selected_rows()
     nr = pathto[0][0]
     self.words_dialog(self.liststore[nr][1],self.liststore[nr][2])
+    self.dialog.set_default_response(gtk.RESPONSE_OK)
     response = self.dialog.run()
-    if response == gtk.RESPONSE_ACCEPT:
+    if response == gtk.RESPONSE_OK:
       self.liststore[nr]=(0,self.entry1.get_text(),self.entry2.get_text())
-    else:
-      self.dialog.destroy()
+    self.dialog.destroy()
 
   def delete_cb(self, widget, data=None):
     (a,pathto) = self.selection.get_selected_rows()
     self.liststore.remove(self.liststore.get_iter(pathto[0]))
 
   def words_dialog(self, ent1, ent2):
-    self.dialog = gtk.Dialog(flags = gtk.DIALOG_MODAL,buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
-    self.dialog.grab_add()
-    self.dialog.set_default_response(gtk.RESPONSE_ACCEPT)
+    self.dialog = gtk.Dialog(flags = gtk.DIALOG_MODAL,buttons=(gtk.STOCK_OK,gtk.RESPONSE_OK))
+    self.dialog.set_default_response(gtk.RESPONSE_OK)
     self.dialog.set_modal(True)
     self.dialog.set_border_width(10)
     self.dialog.set_resizable(False)
@@ -148,15 +187,20 @@ class Editor:
     self.entry1 = gtk.Entry()
     hbox.pack_start(self.entry1)
     self.entry1.set_text(ent1)
+    self.entry1.connect('activate',self.responseToDialog)
     self.entry1.show()
 
     self.entry2 = gtk.Entry()
     hbox.pack_start(self.entry2)
     self.entry2.set_text(ent2)
+    self.entry2.connect('activate',self.responseToDialog)
     self.entry2.show()
     self.dialog.vbox.pack_start(hbox,False,False,0)
 
     return self.dialog
+    
+  def responseToDialog(self,widget,data=None):
+    self.dialog.response(gtk.RESPONSE_OK)
 
   def __init__(self):
      
@@ -178,7 +222,7 @@ class Editor:
 
     button = gtk.Button()
     image = gtk.Image()
-    image.set_from_file('gfx/test.png')
+    image.set_from_file('gfx/new.png')
     image.show()
     button.connect('clicked',self.new_test_cb)
     box1.pack_start(button,False,False,2)
@@ -188,7 +232,7 @@ class Editor:
 
     button = gtk.Button()
     image = gtk.Image()
-    image.set_from_file('gfx/edit.png')
+    image.set_from_file('gfx/open.png')
     image.show()
     button.connect('clicked',self.load_cb)
     box1.pack_start(button,False,False,2)
@@ -199,7 +243,7 @@ class Editor:
 
     button = gtk.Button()
     image = gtk.Image()
-    image.set_from_file('gfx/sett.png')
+    image.set_from_file('gfx/save.png')
     image.show()
     button.connect('clicked',self.save_cb)
     box1.pack_start(button,False,False,2)
@@ -209,7 +253,7 @@ class Editor:
 
     button = gtk.Button()
     image = gtk.Image()
-    image.set_from_file('gfx/sett.png')
+    image.set_from_file('gfx/save.png')
     image.show()
     button.connect('clicked',self.save_as_cb)
     box1.pack_start(button,False,False,2)
@@ -223,7 +267,7 @@ class Editor:
 
     button = gtk.Button()
     image = gtk.Image()
-    image.set_from_file('gfx/edit.png')
+    image.set_from_file('gfx/add.png')
     image.show()
     button.connect('clicked',self.new_cb)
     box1.pack_start(button,False,False,2)
@@ -234,7 +278,7 @@ class Editor:
 
     button = gtk.Button()
     image = gtk.Image()
-    image.set_from_file('gfx/edit.png')
+    image.set_from_file('gfx/editelement.png')
     image.show()
     button.connect('clicked',self.edit_cb)
     box1.pack_start(button,False,False,2)
@@ -245,7 +289,7 @@ class Editor:
 
     button = gtk.Button()
     image = gtk.Image()
-    image.set_from_file('gfx/edit.png')
+    image.set_from_file('gfx/del.png')
     image.show()
     button.connect('clicked',self.delete_cb)
     box1.pack_start(button,False,False,2)
@@ -255,5 +299,6 @@ class Editor:
     button.show()
 
     self.window.show()
-    self.filename = 'No test set'
+    self.filename = None
     self.words = gen.Checker(None)
+    self.make_table(None)

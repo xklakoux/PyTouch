@@ -61,6 +61,7 @@ class Checker:
       return True
     return False
 
+
   def fetch(self):
     u'''Fetches 20 words from www.ang.pl''' 
     fromweb=[]

@@ -164,7 +164,7 @@ class Base:
 
     button = gtk.Button()
     image = gtk.Image()
-    image.set_from_file('gfx/test.png')
+    image.set_from_file('gfx/open.png')
     image.show()
     button.connect('clicked',self.load_test_cb)
     box1.pack_start(button,False,False,0)
