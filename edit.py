@@ -11,10 +11,12 @@ import gobject
 class Editor:
 
   def changed_cb(self,widget):
+    
     self.rows = self.newselect
     self.newselect = self.selection.get_selected_rows()
 
   def make_table(self,words):
+    '''Makes a new liststore'''
     if not 'liststore' in vars(self):
       self.liststore = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING,\
       gobject.TYPE_STRING)
@@ -62,20 +64,15 @@ class Editor:
     #self.startbutton.set_sensitive(True)
 
   def new_test_cb(self, widget, data=None):
-    message = gtk.MessageDialog(type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_YES_NO,message_format='Do you want to save your file before opening new test?')
-    answer = message.run()
-    if answer == gtk.RESPONSE_YES:
-      self.save_as_cb(None)
-      message.destroy()
-    elif answer == gtk.RESPONSE_NO:
-      message.destroy()
-    else:
+    '''Clears liststore'''
+    if self.check_if_saved('opening new file'):
       return
     self.words.voc=[]
     self.liststore.clear()
 
     
   def save_as_cb(self, widget, data=None):
+    '''Saves to a file with choosen filename'''
     dialog = gtk.FileChooserDialog("Save as..",None,gtk.FILE_CHOOSER_ACTION_SAVE,\
     (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
     dialog.set_default_response(gtk.RESPONSE_OK)
@@ -97,6 +94,9 @@ class Editor:
       self.save_cb(self.liststore,self.filename)
     elif response == gtk.RESPONSE_CANCEL:
       self.filename = None
+    else:
+      dialog.destroy()
+      return True
     dialog.destroy()
 
   def save_cb(self, widget, data=None):
@@ -120,18 +120,13 @@ S³ówko2=Tak
       for (a,b,c) in self.liststore:
         f.write('{}\xa4=\xa4{}\r\n'.format(b.decode('windows-1250'),c))
       f.close()
+      self.changed = False
     else:
       self.save_as_cb(self.treeview)
 
   def load_cb(self, widget, data=None):
-    message = gtk.MessageDialog(type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_YES_NO,message_format='Do you want to save your file before opening new test?')
-    answer = message.run()
-    if answer == gtk.RESPONSE_YES:
-      self.save_as_cb(None)
-      message.destroy()
-    elif answer == gtk.RESPONSE_NO:
-      message.destroy()
-    else:
+    '''Loads new test from file'''
+    if self.check_if_saved('opening new test'):
       return
     dialog = gtk.FileChooserDialog("Open..",None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK))
     dialog.set_default_response(gtk.RESPONSE_OK)
@@ -158,25 +153,44 @@ S³ówko2=Tak
       self.filename = None
     dialog.destroy()
     
+  def check_correct(self,one,two):
+    '''Check for duplicates'''
+    for row in self.liststore:
+      if (one,two) == (row[1],row[2]) or (one,two) == (row[1],row[2]):
+        return False 
+    return True
 
   def new_cb(self, widget, data=None):
-    self.words_dialog('','')  
+    '''Makes a new record in liststore'''
+    self.words_dialog(data[0],data[1])  
     self.dialog.set_default_response(gtk.RESPONSE_OK)
     response = self.dialog.run()
     if response == gtk.RESPONSE_OK:
-      print self.entry1.get_text()
-      self.liststore.append((0,self.entry1.get_text(),self.entry2.get_text()))
+      ent1 = self.entry1.get_text()
+      ent2 = self.entry2.get_text()
+      if not self.check_correct(ent1,ent2):
+        message = gtk.MessageDialog(message_format='Duplicate error!',type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_OK)
+        message.run()
+        message.destroy()
+        self.dialog.destroy()
+        print ent1,ent2
+        self.new_cb(None,(ent1,ent2))
+        return 
+      self.liststore.append((0,ent1,ent2))
+      self.changed = True
       self.fix_numbers()
       self.dialog.destroy()
-      self.new_cb(None)
+      self.new_cb(None,('',''))
     else:
       self.dialog.destroy()
     
   def fix_numbers(self):
+    '''Special function to fix row ids'''
     for (index, value ) in enumerate(self.liststore):
       self.liststore[index][0]=index+1
 
   def edit_cb(self, widget, data=None,forcedbytreeview=None):
+    '''Edit record'''
     (a,pathto) = self.selection.get_selected_rows()
     nr = pathto[0][0]
     self.words_dialog(self.liststore[nr][1],self.liststore[nr][2])
@@ -184,14 +198,19 @@ S³ówko2=Tak
     response = self.dialog.run()
     if response == gtk.RESPONSE_OK:
       self.liststore[nr]=(0,self.entry1.get_text(),self.entry2.get_text())
+      self.changed = True
     self.dialog.destroy()
 
   def delete_cb(self, widget, data=None):
-    (a,pathto) = self.selection.get_selected_rows()
-    self.liststore.remove(self.liststore.get_iter(pathto[0]))
-    self.fix_numbers()
+    '''Delete a record'''
+    if len(self.liststore) and self.selection.get_selected_rows:
+      (a,pathto) = self.selection.get_selected_rows()
+      self.liststore.remove(self.liststore.get_iter(pathto[0]))
+      self.fix_numbers()
+      self.changed = True
 
   def words_dialog(self, ent1, ent2):
+    '''Makes a dialog where you can write your word pairs into'''
     self.dialog = gtk.Dialog(flags = gtk.DIALOG_MODAL,buttons=(gtk.STOCK_OK,gtk.RESPONSE_OK))
     self.dialog.set_default_response(gtk.RESPONSE_OK)
     self.dialog.set_modal(True)
@@ -219,15 +238,24 @@ S³ówko2=Tak
   def responseToDialog(self,widget,data=None):
     self.dialog.response(gtk.RESPONSE_OK)
 
+  def check_if_saved(self,ending):
+    '''A function that protects you from loosing new words'''
+    if self.changed:
+      message = gtk.MessageDialog(type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_YES_NO,message_format='Do you want to save your file before {}?'.format(ending))
+      answer = message.run()
+      if answer == gtk.RESPONSE_YES:
+        if self.save_as_cb(None):
+          message.destroy()
+          return True
+        message.destroy()
+      elif answer == gtk.RESPONSE_NO:
+        message.destroy()
+      else:
+        return True           #delete_event function required that
+      return False
+        
   def delete_event(self,widget,data=None):
-    message = gtk.MessageDialog(type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_YES_NO,message_format='Do you want to save your file before exit?')
-    answer = message.run()
-    if answer == gtk.RESPONSE_YES:
-      self.save_as_cb(None)
-      message.destroy()
-    elif answer == gtk.RESPONSE_NO:
-      message.destroy()
-    return False
+    return self.check_if_saved('exit')
 
 
   def __init__(self):
@@ -297,7 +325,7 @@ S³ówko2=Tak
     image = gtk.Image()
     image.set_from_file('gfx/add.png')
     image.show()
-    button.connect('clicked',self.new_cb)
+    button.connect('clicked',self.new_cb,('',''))
     box1.pack_start(button,False,False,2)
     button.add(image)
     self.tooltips.set_tip(button,"New element")
@@ -330,3 +358,4 @@ S³ówko2=Tak
     self.filename = None
     self.words = gen.Checker(None)
     self.make_table(None)
+    self.changed = False

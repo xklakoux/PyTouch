@@ -13,11 +13,11 @@ class Base:
   def load_test_cb(self,widget,data=None):
     if not 'ltdialog' in vars(self):
       self.ltdialog = loadtest.LoadTest()
-    self.ltdialog.window.run()
-    if self.ltdialog.words.voc:
-      self.oncemore.set_sensitive(True)
-      self.finish.set_sensitive(True)
-      self.begin()
+      self.ltdialog.window.run()
+      if self.ltdialog.words.voc:
+        self.oncemore.set_sensitive(True)
+        self.finish.set_sensitive(True)
+        self.begin()
     
   def load_test(self):
     pass 
@@ -56,10 +56,6 @@ class Base:
     self.showed.set_text('')
     self.progressbar.set_fraction(0)
     self.entryRem.set_text('-')
-    #self.good=0
-    #self.bad=0
-    #self.labelgood.set_text(str(self.good))          #delete old test remainders and put a new one
-    #self.labelbad.set_text(str(self.bad))
     self.radio_button.set_sensitive(False)
     self.radio_button1.set_sensitive(False)
     self.labelrem.set_text(str(len(self.words.voc)) + "("+ str(len(self.wordsrev)) +")")
@@ -112,12 +108,8 @@ class Base:
       self.bad+=1
       self.labelbad.set_text(str(self.bad))
       self.wordslen+=1
-      #self.labelbad.show()
       self.entryRem.set_text(self.wordsrev[-1][0] + " - " + self.wordsrev[-1][1])
     self.progressbar.set_fraction(float(self.good)/float(self.wordslen))
-    #self.progressbar.show()
-    #self.labelgood.show()
-    #self.entryRem.show()
     self.start_test() 
 
   def finish_callback(self,widget,data=None):

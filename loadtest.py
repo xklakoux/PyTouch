@@ -103,13 +103,6 @@ class LoadTest():
     self.startbutton.set_sensitive(True)
 
   def fetchfromnet_cb(self,widget,data=None):
-    #self.filename = 'Internet'
-    #self.dialog = gtk.MessageDialog(self.window,message_format='Fetching words...\nWait a while')
-    #self.thread = mythread.MyThread(self.dialog)
-    #self.words.voc = self.thread.start()
-    #self.entry.set_text('Internet')
-    #self.dialog.connect('destroy',self.destr_messdialog_cb)
-    #self.dialog.run()
     self.words = []
     self.words = gen.Checker('Internet')
     self.make_table(self.words.voc)
@@ -118,6 +111,10 @@ class LoadTest():
     self.words.voc = self.thread.words.voc
     self.make_table(self.words.voc)
     self.thread.quit = True
+
+  def delete_event(self, widget, data=None):
+    self.words.voc = []
+    self.window.hide()
 
   def __init__(self):
 
@@ -128,7 +125,7 @@ class LoadTest():
     self.window.set_resizable(False)
     self.window.set_title('Open')
     self.window.connect('destroy', lambda wid:self.window.hide())
-    self.window.connect('delete_event', lambda a1,a2:self.window.hide())
+    self.window.connect('delete_event', self.delete_event)
     
     box = gtk.HBox(False, 0)
     self.window.vbox.pack_start(box, False, False, 10)
