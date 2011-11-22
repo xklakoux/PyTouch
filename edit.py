@@ -14,36 +14,6 @@ class Editor:
     self.rows = self.newselect
     self.newselect = self.selection.get_selected_rows()
 
-  def load_cb(self,widget,data=None):
-    dialog = gtk.FileChooserDialog("Open..",None,gtk.FILE_CHOOSER_ACTION_OPEN,\
-    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-    dialog.set_default_response(gtk.RESPONSE_OK)
-    dialog.set_modal(True)
-
-    filter = gtk.FileFilter()
-    filter.set_name("Pytacz Master Text Files")
-    filter.add_pattern("*.txt")
-    dialog.add_filter(filter)
-
-    filter = gtk.FileFilter()
-    filter.set_name("All files")
-    filter.add_pattern("*")
-    dialog.add_filter(filter)
-
-    response = dialog.run()
-    if response == gtk.RESPONSE_OK:
-      self.filename = dialog.get_filename()
-      self.words = gen.Checker(self.filename)
-      if not 'liststore' in vars(self):
-        self.make_table(self.words.voc)
-      else:
-        self.liststore.clear()
-        for (one,two) in self.words.voc:
-          self.liststore.append((True,one,two))
-    elif response == gtk.RESPONSE_CANCEL:
-      self.filename = None
-    dialog.destroy()
-
   def make_table(self,words):
     if not 'liststore' in vars(self):
       self.liststore = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING,\
@@ -92,6 +62,15 @@ class Editor:
     #self.startbutton.set_sensitive(True)
 
   def new_test_cb(self, widget, data=None):
+    message = gtk.MessageDialog(type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_YES_NO,message_format='Do you want to save your file before opening new test?')
+    answer = message.run()
+    if answer == gtk.RESPONSE_YES:
+      self.save_as_cb(None)
+      message.destroy()
+    elif answer == gtk.RESPONSE_NO:
+      message.destroy()
+    else:
+      return
     self.words.voc=[]
     self.liststore.clear()
 
@@ -145,6 +124,15 @@ S³ówko2=Tak
       self.save_as_cb(self.treeview)
 
   def load_cb(self, widget, data=None):
+    message = gtk.MessageDialog(type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_YES_NO,message_format='Do you want to save your file before opening new test?')
+    answer = message.run()
+    if answer == gtk.RESPONSE_YES:
+      self.save_as_cb(None)
+      message.destroy()
+    elif answer == gtk.RESPONSE_NO:
+      message.destroy()
+    else:
+      return
     dialog = gtk.FileChooserDialog("Open..",None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK))
     dialog.set_default_response(gtk.RESPONSE_OK)
     dialog.set_modal(True)
