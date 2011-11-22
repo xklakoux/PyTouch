@@ -145,7 +145,31 @@ S³ówko2=Tak
       self.save_as_cb(self.treeview)
 
   def load_cb(self, widget, data=None):
-    pass
+    dialog = gtk.FileChooserDialog("Open..",None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+    dialog.set_default_response(gtk.RESPONSE_OK)
+    dialog.set_modal(True)
+
+    filter = gtk.FileFilter()
+    filter.set_name("Pytacz Master Text Files")
+    filter.add_pattern("*.txt")
+    dialog.add_filter(filter)
+
+    filter = gtk.FileFilter()
+    filter.set_name("All files")
+    filter.add_pattern("*")
+    dialog.add_filter(filter)
+
+    response = dialog.run()
+    if response == gtk.RESPONSE_OK:
+      self.filename = dialog.get_filename()
+      self.words = gen.Checker(self.filename)
+      self.liststore.clear()
+      for (index, (one,two)) in enumerate(self.words.voc):
+        self.liststore.append((index+1,one,two))
+    elif response == gtk.RESPONSE_CANCEL:
+      self.filename = None
+    dialog.destroy()
+    
 
   def new_cb(self, widget, data=None):
     self.words_dialog('','')  
@@ -154,11 +178,15 @@ S³ówko2=Tak
     if response == gtk.RESPONSE_OK:
       print self.entry1.get_text()
       self.liststore.append((0,self.entry1.get_text(),self.entry2.get_text()))
+      self.fix_numbers()
       self.dialog.destroy()
       self.new_cb(None)
     else:
       self.dialog.destroy()
     
+  def fix_numbers(self):
+    for (index, value ) in enumerate(self.liststore):
+      self.liststore[index][0]=index+1
 
   def edit_cb(self, widget, data=None,forcedbytreeview=None):
     (a,pathto) = self.selection.get_selected_rows()
@@ -173,6 +201,7 @@ S³ówko2=Tak
   def delete_cb(self, widget, data=None):
     (a,pathto) = self.selection.get_selected_rows()
     self.liststore.remove(self.liststore.get_iter(pathto[0]))
+    self.fix_numbers()
 
   def words_dialog(self, ent1, ent2):
     self.dialog = gtk.Dialog(flags = gtk.DIALOG_MODAL,buttons=(gtk.STOCK_OK,gtk.RESPONSE_OK))
@@ -253,7 +282,7 @@ S³ówko2=Tak
 
     button = gtk.Button()
     image = gtk.Image()
-    image.set_from_file('gfx/save.png')
+    image.set_from_file('gfx/saveas.png')
     image.show()
     button.connect('clicked',self.save_as_cb)
     box1.pack_start(button,False,False,2)

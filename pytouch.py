@@ -5,11 +5,8 @@ u"""This is a clone of a freeware program 'Pytacz Master' written by kl4q"""
 import pygtk
 pygtk.require('2.0')
 import gtk
-import gen
-import loadtest
-import random
-import os
-import edit
+import random, os
+import gen, edit, loadtest
 
 class Base:
 
@@ -53,7 +50,7 @@ class Base:
   def shut_down(self):
     self.guessed.set_sensitive(False)
     self.checkbutton.set_sensitive(False)
-    #self.oncemore.set_sensitive(False)
+    self.oncemore.set_sensitive(False)
     self.finish.set_sensitive(False)
     self.guessed.set_text('')
     self.showed.set_text('')
