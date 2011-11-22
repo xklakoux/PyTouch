@@ -9,7 +9,11 @@ import gen
 
 
 class LoadTest():
+  '''This class calls a dialog for loading words from file and fetching
+vocabulary from internet'''
+
   def check_cb(self,cell,path,model):
+    '''For checking checkboxes'''
     self.liststore[path][0] = not self.liststore[path][0]
 
   def row_activated_cb(self,cell,path,model):
@@ -52,10 +56,13 @@ class LoadTest():
     dialog.destroy()
 
   def changed_cb(self,widget):
+    '''Function for handling multiple selections
+cause it changes selection everytime you hit a spacebar'''
     self.rows = self.newselect
     self.newselect = self.selection.get_selected_rows()
 
   def make_table(self,words):
+    '''Makes table for loaded words'''
     if not 'liststore' in vars(self):
       self.liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
       
@@ -106,11 +113,6 @@ class LoadTest():
     self.words = []
     self.words = gen.Checker('Internet')
     self.make_table(self.words.voc)
-
-  def destr_messdialog_cb(self,widget,data=None):
-    self.words.voc = self.thread.words.voc
-    self.make_table(self.words.voc)
-    self.thread.quit = True
 
   def delete_event(self, widget, data=None):
     self.words.voc = []

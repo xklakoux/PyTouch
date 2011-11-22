@@ -9,9 +9,11 @@ import gobject
 
 
 class Editor:
+  '''This class calls a window with editor for creating and editing new 
+tests'''
 
   def changed_cb(self,widget):
-    
+    '''Handles multiple row selection'''
     self.rows = self.newselect
     self.newselect = self.selection.get_selected_rows()
 

@@ -19,10 +19,8 @@ class Base:
         self.finish.set_sensitive(True)
         self.begin()
     
-  def load_test(self):
-    pass 
-
   def begin(self):
+    '''Resets workspace and initiates the test'''
     self.progressbar.set_fraction(0)
     self.good=0
     self.bad=0
@@ -48,6 +46,7 @@ class Base:
     editor = edit.Editor()
 
   def shut_down(self):
+    '''Grays out fields and finishes the test'''
     self.guessed.set_sensitive(False)
     self.checkbutton.set_sensitive(False)
     self.oncemore.set_sensitive(False)
@@ -61,6 +60,7 @@ class Base:
     self.labelrem.set_text(str(len(self.words.voc)) + "("+ str(len(self.wordsrev)) +")")
 
   def start_test(self):
+    '''Sets Remember text, loads new question'''
     self.labelrem.set_text(str(len(self.words.voc)) + "("+ str(len(self.wordsrev)) +")")
     self.labelrem.show()
     if not self.words.voc:      #if there are no more words
@@ -74,7 +74,8 @@ class Base:
     self.guessed.show()
     self.showed.show()
 
-  def sett_callback(self,widget,data=None):
+  def settings_cb(self,widget,data=None):
+    '''Calls a dialog with settings'''
     self.dialogsett = gen.DialogSett(self.settings)
     response = self.dialogsett.window.run()
     if response == gtk.RESPONSE_OK:
@@ -84,6 +85,7 @@ class Base:
     self.dialogsett.window.destroy()
 
   def its_done(self):
+    '''Checks if there are more words to learn'''
     if not len(self.words.voc):    #if there are no other words
       self.guessed.set_text('')
       self.showed.set_text('')
@@ -97,6 +99,7 @@ class Base:
         #self.guessed.show()
 
   def check_callback(self,widget,data=None):
+    '''Finds out if word is correct and handles statistics'''
     if self.words.check(self.guessed.get_text(),self.words.voc[self.ix][self.mode-1], self.settings): #1 if self.mode is 0 and opposite
       self.words.voc.pop(self.ix)
       self.good+=1
@@ -175,7 +178,7 @@ class Base:
     image = gtk.Image()
     image.set_from_file('gfx/sett.png')
     image.show()
-    button.connect('clicked',self.sett_callback)
+    button.connect('clicked',self.settings_cb)
     box1.pack_start(button,False,False,0)
     button.add(image)
     self.tooltips.set_tip(button,"Settings")
