@@ -111,7 +111,7 @@ class Editor:
     filter.set_name("All files")
     filter.add_pattern("*")
     dialog.add_filter(filter)
-
+    dialog.set_do_overwrite_confirmation(True)
     response = dialog.run()
     if response == gtk.RESPONSE_OK:
       self.filename = dialog.get_filename()
@@ -231,6 +231,17 @@ S³ówko2=Tak
   def responseToDialog(self,widget,data=None):
     self.dialog.response(gtk.RESPONSE_OK)
 
+  def delete_event(self,widget,data=None):
+    message = gtk.MessageDialog(type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_YES_NO,message_format='Do you want to save your file before exit?')
+    answer = message.run()
+    if answer == gtk.RESPONSE_YES:
+      self.save_as_cb(None)
+      message.destroy()
+    elif answer == gtk.RESPONSE_NO:
+      message.destroy()
+    return False
+
+
   def __init__(self):
      
     self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -238,8 +249,8 @@ S³ówko2=Tak
     self.window.set_border_width(5)
     self.window.set_resizable(False)
     self.window.set_title('Open')
-    self.window.connect('destroy', lambda wid:self.window.destroy())
-    self.window.connect('delete_event', lambda a1,a2:self.window.destroy())
+    self.window.connect('destroy', lambda wig:self.window.destroy())
+    self.window.connect('delete_event',self.delete_event) 
     
     self.tooltips = gtk.Tooltips()
     self.mainvbox = gtk.VBox(False,0)
