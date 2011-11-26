@@ -2,8 +2,10 @@ PyTouch
 =======
 
 1. General Info
-2. Example of test
-3. Launching
+2. Launching
+3. Screenshot
+4. Example of test
+
 
 General Info
 ------------
@@ -18,6 +20,15 @@ The main goal for me was to make similar program working with linux without
 need to use wine. It probably won't have so many features as PM, but i plan
 to implement the most important ones along with test editor.
 
+
+Launching
+---------
+
+	$ ./pytouch.py
+
+or just execute it by double clicking this file.
+
+
 Example of test
 ---------------
 
@@ -28,9 +39,7 @@ version (at the moment created tests are not), but I'm experiencing some
 trouble with encoding while doing own tests.
 
 
-Launching
----------
+Screenshot
+----------
 
-	$ ./pytouch.py
-
-or just execute it by double clicking this file.
+![PyTouch touch](http://dl.dropbox.com/u/5775264/pytouch.jpg "Smooth interface of PyTouch")
