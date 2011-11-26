@@ -42,15 +42,27 @@ vocabulary from internet'''
     response = dialog.run()
     if response == gtk.RESPONSE_OK:
       self.filename = dialog.get_filename()
-      self.entry.set_text(self.filename) #show only the filename
       self.words = gen.Checker(self.filename)
-      if not 'liststore' in vars(self):
-        self.make_table(self.words.voc)
+      self.goon=True
+      if not self.words.voc:            #none words collected = bad file
+        message = gtk.MessageDialog(message_format='Sorry, it isn\'t apopriate  Pytacz Master file.',type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_OK)
+        message.run()
+        message.destroy()
+        self.entry.set_text('')
+        self.filename=None
+        if 'liststore' in vars(self):
+          self.liststore.clear()
+        self.startbutton.set_sensitive(False)
+        self.goon = False
       else:
-        self.liststore.clear()
-        for (one,two) in self.words.voc:
-          self.liststore.append((True,one,two))
-      self.startbutton.set_sensitive(True)
+        self.entry.set_text(self.filename) #show only the filename
+        if not 'liststore' in vars(self):
+          self.make_table(self.words.voc)
+        else:
+          self.liststore.clear()
+          for (one,two) in self.words.voc:
+            self.liststore.append((True,one,two))
+        self.startbutton.set_sensitive(True)
     elif response == gtk.RESPONSE_CANCEL:
       self.filename = None
     dialog.destroy()

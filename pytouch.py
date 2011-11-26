@@ -9,15 +9,16 @@ import random, os
 import gen, edit, loadtest
 
 class Base:
+  '''This class implements the main window of PyTouch. The one you see after starting program'''
 
   def load_test_cb(self,widget,data=None):
     if not 'ltdialog' in vars(self):
       self.ltdialog = loadtest.LoadTest()
-      self.ltdialog.window.run()
-      if self.ltdialog.words.voc:
-        self.oncemore.set_sensitive(True)
-        self.finish.set_sensitive(True)
-        self.begin()
+    self.ltdialog.window.run()
+    if self.ltdialog.words.voc and self.ltdialog.goon:      #bad files protection
+      self.oncemore.set_sensitive(True)
+      self.finish.set_sensitive(True)
+      self.begin()
     
   def begin(self):
     '''Resets workspace and initiates the test'''
@@ -43,7 +44,9 @@ class Base:
     self.start_test()
 
   def edit_callback(self,widget,data=None):
-    editor = edit.Editor()
+    '''Callback of editor button'''
+    if not 'editor' in vars():
+      editor = edit.Editor()
 
   def shut_down(self):
     '''Grays out fields and finishes the test'''

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#-*- coding: windows-1250 -*-
+#-*- coding: utf-8 -*-
 
 import pygtk
 pygtk.require('2.0')
@@ -71,6 +71,7 @@ tests'''
       return
     self.words.voc=[]
     self.liststore.clear()
+    self.window.set_title('Test Editor')
 
     
   def save_as_cb(self, widget, data=None):
@@ -103,6 +104,7 @@ tests'''
 
   def save_cb(self, widget, data=None):
     if self.filename:
+      self.window.set_title('{} - Test Editor'.format(self.filename))
       f = open(self.filename,'w')
       f.write('''[Informacje]
 Autor=
@@ -113,14 +115,14 @@ Ostatnia modyfikacja=
 1=
 2=
 
-[Do zapamiêtania]
-S³ówko1=Tak
-Miêdzy=-
-S³ówko2=Tak
+[Do zapamiętania]
+Słówko1=Tak
+Między=-
+Słówko2=Tak
 
-[Dane]\r\n''')
+[Dane]\n'''.encode('windows-1250'))
       for (a,b,c) in self.liststore:
-        f.write('{}\xa4=\xa4{}\r\n'.format(b.decode('windows-1250'),c))
+        f.write('{}\xa4=\xa4{}\r\n'.format(b.encode('windows-1250'),c.encode('windows-1250')))
       f.close()
       self.changed = False
     else:
@@ -147,6 +149,7 @@ S³ówko2=Tak
     response = dialog.run()
     if response == gtk.RESPONSE_OK:
       self.filename = dialog.get_filename()
+      self.window.set_title('{} - Test Editor'.format(self.filename))
       self.words = gen.Checker(self.filename)
       self.liststore.clear()
       for (index, (one,two)) in enumerate(self.words.voc):
@@ -199,13 +202,13 @@ S³ówko2=Tak
     self.dialog.set_default_response(gtk.RESPONSE_OK)
     response = self.dialog.run()
     if response == gtk.RESPONSE_OK:
-      self.liststore[nr]=(0,self.entry1.get_text(),self.entry2.get_text())
+      self.liststore[nr]=(self.liststore[nr][0],self.entry1.get_text(),self.entry2.get_text())
       self.changed = True
     self.dialog.destroy()
 
   def delete_cb(self, widget, data=None):
     '''Delete a record'''
-    if len(self.liststore) and self.selection.get_selected_rows:
+    if self.selection.get_selected_rows()[1]:
       (a,pathto) = self.selection.get_selected_rows()
       self.liststore.remove(self.liststore.get_iter(pathto[0]))
       self.fix_numbers()
@@ -266,7 +269,7 @@ S³ówko2=Tak
     self.window.set_size_request(500, 500)
     self.window.set_border_width(5)
     self.window.set_resizable(False)
-    self.window.set_title('Open')
+    self.window.set_title('Test Editor')
     self.window.connect('destroy', lambda wig:self.window.destroy())
     self.window.connect('delete_event',self.delete_event) 
     

@@ -9,8 +9,11 @@ import re
 import random
 
 class Checker:
+  '''This class contains function for most operations you do on the words,
+including loading files, checking correction, fetching them from internet'''
 
   def load_voc(self,filename):
+    '''Loads vocabulary'''
     if filename == 'Internet':    #vocabulary from internet
       self.voc = self.fetch() 
       self.col1 = 'English'
@@ -31,6 +34,7 @@ class Checker:
     self.load_colnames(filename)
   
   def load_colnames(self,filename):
+    '''Loads column names if you specified any'''
     f = open(filename,'rU')
     lines = f.readlines()
     i=0
@@ -46,7 +50,8 @@ class Checker:
 
   def check(self,guessed,shouldbe,settings):
     u'''Checks if the answer is correct'''
-    translations = [('ą','a'),('ć','c'),('ę','e'),('ł','l'),('ń','n'),('ó','o'),('ś','s'),('ź','z'),('ż','z')]
+    translations = [('ą','a'),('ć','c'),('ę','e'),('ł','l'),('ń','n'),('ó','o'),('ś','s'),('ź','z'),('ż','z'),\
+    ('Ą','A'),('Ć','C'),('Ę','E'),('Ł','L'),('Ń','N'),('Ó','O'),('Ś','S'),('Ź','Z'),('Ż','Z')]
     if settings['polish'] == True:               #polish signs don't matter
       for pol,lat in translations:
         guessed = guessed.replace(pol,lat)
@@ -91,7 +96,7 @@ class Checker:
     
 
 class DialogSett:
-  u'''A Class to handle Settings Dialog'''
+  '''A Class to handle Settings Dialog'''
 
   def __init__(self,state):
     self.window = gtk.Dialog('Settings',None,gtk.DIALOG_MODAL,(gtk.STOCK_OK,gtk.RESPONSE_OK))
