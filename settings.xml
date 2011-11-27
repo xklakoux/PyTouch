@@ -2,8 +2,8 @@
 <settings>
   <ignore>
     <case value="1"/>
-    <accents value="0"/>
-    <whitespaces value="0"/>
+    <accents value="1"/>
+    <whitespaces value="1"/>
   </ignore>
   <sounds>
     <good filename="path"/>

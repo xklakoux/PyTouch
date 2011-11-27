@@ -144,6 +144,8 @@ class Base:
 
     self.handlexml = createxml.HandleXML()
     self.settings = self.handlexml.read_xml('settings.xml')
+    if not self.settings:
+      self.settings = self.handlexml.create_xml(filename='settings.xml') 
 
     self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
     self.window.set_size_request(400,-1)
