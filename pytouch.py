@@ -6,7 +6,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import random, os
-import gen, edit, loadtest
+import gen, edit, loadtest, createxml
 
 class Base:
   '''This class implements the main window of PyTouch. The one you see after starting program'''
@@ -82,6 +82,7 @@ class Base:
       self.settings['accents'] = self.dialogsett.accentsbutton.get_active()
       self.settings['case'] = self.dialogsett.casebutton.get_active()
       self.settings['whitespaces'] = self.dialogsett.whitebutton.get_active()
+      self.handlexml.create_xml(self.settings,filename='settings.xml')
     self.dialogsett.window.destroy()
 
   def its_done(self):
@@ -141,7 +142,8 @@ class Base:
 
   def __init__(self):
 
-    self.settings = {'accents':True, 'case':True, 'whitespaces':True}
+    self.handlexml = createxml.HandleXML()
+    self.settings = self.handlexml.read_xml('settings.xml')
 
     self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
     self.window.set_size_request(400,-1)

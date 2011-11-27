@@ -1,4 +1,4 @@
-*.sw[op]
+*.sw[opn]
 *.py[co]
 testing
 build

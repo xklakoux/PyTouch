@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<settings>
+  <ignore>
+    <case value="1"/>
+    <accents value="0"/>
+    <whitespaces value="0"/>
+  </ignore>
+  <sounds>
+    <good filename="path"/>
+    <bad filename="path"/>
+    <finish filename="path"/>
+    <end filename="path"/>
+  </sounds>
+</settings>

@@ -52,14 +52,14 @@ including loading files, checking correction, fetching them from internet'''
     u'''Checks if the answer is correct'''
     translations = [('ą','a'),('ć','c'),('ę','e'),('ł','l'),('ń','n'),('ó','o'),('ś','s'),('ź','z'),('ż','z'),\
     ('Ą','A'),('Ć','C'),('Ę','E'),('Ł','L'),('Ń','N'),('Ó','O'),('Ś','S'),('Ź','Z'),('Ż','Z')]
-    if settings['polish'] == True:               #polish signs don't matter
+    if settings['accents'] == True:               #polish signs don't matter
       for pol,lat in translations:
         guessed = guessed.replace(pol,lat)
         shouldbe = shouldbe.replace(pol,lat)
     if settings['case'] == True:               #case doesn't matter
       guessed = guessed.lower()
       shouldbe = shouldbe.lower()
-    if settings['white'] == True:               #white signs don't matter
+    if settings['whitespaces'] == True:               #white signs don't matter
       ' '.join(guessed.split())
       ' '.join(shouldbe.split())
     if guessed == shouldbe:
@@ -105,7 +105,7 @@ class DialogSett:
     self.window.set_border_width(10)
 
     self.accentsbutton = gtk.CheckButton('Ignore polish signs')
-    self.accentsbutton.set_active(state['polish'])
+    self.accentsbutton.set_active(state['accents'])
     self.accentsbutton.show()
     self.window.vbox.pack_start(self.accentsbutton, False,False,0)
     self.casebutton = gtk.CheckButton('Ignore letter case')
@@ -113,7 +113,7 @@ class DialogSett:
     self.casebutton.show()
     self.window.vbox.pack_start(self.casebutton,False,False,0)
     self.whitebutton = gtk.CheckButton('Ignore Whitespaces')
-    self.whitebutton.set_active(state['white'])
+    self.whitebutton.set_active(state['whitespaces'])
     self.whitebutton.show()
     self.window.vbox.pack_start(self.whitebutton,False,False,0)
     
