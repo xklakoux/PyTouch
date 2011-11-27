@@ -1,16 +1,16 @@
 [Informacje]
 Autor=
 Opis=
-Ostatnia modyfikacja=24.12.2008
+Ostatnia modyfikacja=
+
+[Kolumny]
+1=
+2=
 
 [Do zapamiêtania]
 S³ówko1=Tak
 Miêdzy=-
 S³ówko2=Tak
-
-[Kolumny]
-1=1 Kolumna
-2=2 Kolumna
 
 [Dane]
 run over¤=¤collide with a pedestrian/dog/etc while driving
@@ -20,7 +20,7 @@ get out¤=¤leave a wehicle/room/building/etc
 get up¤=¤move to a higher position
 tipp off¤=¤give sab information/a warning secretly
 do up¤=¤restore/redecorate sth
-look into¤=¤investigate a situtation
+look into¤=¤investigate a situation
 run away¤=¤leave quickly to avoid trouble/danger
 come on¤=¤hurry up/make an effort
 clam up¤=¤refuse to say anything
@@ -38,4 +38,3 @@ close to¤=¤at the side of
 from the things that happen¤=¤from experience
 don't agree with¤=¤be at odds with
 feel like having¤=¤be in the mood for
-

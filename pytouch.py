@@ -32,10 +32,7 @@ class Base:
     self.radio_button1.set_sensitive(True)
     self.checkbutton.set_sensitive(True)
     self.finish.set_sensitive(True)
-    if os.name == 'nt':
-      self.labeltest.set_text(self.ltdialog.filename.split("\\")[-1]) #show only the filename
-    else:
-      self.labeltest.set_text(self.ltdialog.filename.split("/")[-1]) #show only the filename
+    self.labeltest.set_text(self.ltdialog.filename.split(os.sep)[-1]) #show only the filename
     self.wordsrev = []
     self.words = self.ltdialog.words
     self.wordslen = len(self.words.voc)
@@ -82,9 +79,9 @@ class Base:
     self.dialogsett = gen.DialogSett(self.settings)
     response = self.dialogsett.window.run()
     if response == gtk.RESPONSE_OK:
-      self.settings['polish'] = self.dialogsett.polishbutton.get_active()
+      self.settings['accents'] = self.dialogsett.accentsbutton.get_active()
       self.settings['case'] = self.dialogsett.casebutton.get_active()
-      self.settings['white'] = self.dialogsett.whitebutton.get_active()
+      self.settings['whitespaces'] = self.dialogsett.whitebutton.get_active()
     self.dialogsett.window.destroy()
 
   def its_done(self):
@@ -143,7 +140,9 @@ class Base:
     self.start_test()
 
   def __init__(self):
-    self.settings = {'polish':True,'case':True,'white':True}
+
+    self.settings = {'accents':True, 'case':True, 'whitespaces':True}
+
     self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
     self.window.set_size_request(400,-1)
     self.window.set_border_width(10)
