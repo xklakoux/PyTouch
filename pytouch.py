@@ -7,6 +7,10 @@ pygtk.require('2.0')
 import gtk
 import random, os
 import gen, edit, loadtest, createxml
+from time import sleep
+import threading
+
+gtk.gdk.threads_init()
 
 class Base:
   '''This class implements the main window of PyTouch. The one you see after starting program'''
@@ -22,6 +26,7 @@ class Base:
     
   def begin(self):
     '''Resets workspace and initiates the test'''
+    a = gen.PlaySounds('sounds/Frogger_Start.wav')
     self.progressbar.set_fraction(0)
     self.good=0
     self.bad=0
@@ -63,9 +68,10 @@ class Base:
   def start_test(self):
     '''Sets Remember text, loads new question'''
     self.labelrem.set_text(str(len(self.words.voc)) + "("+ str(len(self.wordsrev)) +")")
-    self.labelrem.show()
     if not self.words.voc:      #if there are no more words
       self.shut_down()
+      sleep(1)
+      a = gen.PlaySounds('sounds/TracknField_End.wav')
       return 0;
     while 1:
       self.checked = random.choice(self.words.voc)
@@ -75,8 +81,6 @@ class Base:
     self.showed.set_text(self.checked[self.mode])
     self.guessed.set_text('')
     self.guessed.grab_focus()
-    self.guessed.show()
-    self.showed.show()
 
   def settings_cb(self,widget,data=None):
     '''Calls a dialog with settings'''
@@ -119,12 +123,14 @@ class Base:
       self.words.voc.pop(self.ix)
       self.good+=1
       self.labelgood.set_text(str(self.good)) 
+      a = gen.PlaySounds('sounds/Frogger_Good.wav')
       self.entryRem.set_text('-')
       self.its_done()
     else:
       self.wordsrev.append(self.words.voc[self.ix])
       self.bad+=1
       self.labelbad.set_text(str(self.bad))
+      a = gen.PlaySounds('sounds/Frogger_Bad.wav')
       self.wordslen+=1
       self.entryRem.set_text(self.wordsrev[-1][0] + " - " + self.wordsrev[-1][1])
     self.progressbar.set_fraction(float(self.good)/float(self.wordslen))

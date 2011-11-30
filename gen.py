@@ -7,6 +7,8 @@ import gtk
 import urllib
 import re
 import random
+import os
+import threading
 
 class Checker:
   '''This class contains function for most operations you do on the words,
@@ -97,31 +99,30 @@ including loading files, checking correction, fetching them from internet'''
 
 class DialogSett:
   '''A Class to handle Settings Dialog'''
+#def sound_cb(self, widget, data=None):
+#    self.soundbox.forall(self.soundbox1_cb)
+#  
+#  def soundbox1_cb(self, widget, data=None):
+#    widget.forall(self.soundbox2_cb) 
 
-  def sound_cb(self, widget, data=None):
-    self.soundbox.forall(self.soundbox1_cb)
-  
-  def soundbox1_cb(self, widget, data=None):
-    widget.forall(self.soundbox2_cb) 
+#  def soundbox2_cb(self,widget,data=None):
+#    if self.soundbutton.get_active():
+#      print widget
+#      widget.set_sensitive(False)
+#    else:
+#      widget.set_sensitive(True)
 
-  def soundbox2_cb(self,widget,data=None):
-    if self.soundbutton.get_active():
-      print widget
-      widget.set_sensitive(False)
-    else:
-      widget.set_sensitive(True)
+#  def good_cb(self,widget,data=None):
+#    pass
 
-  def good_cb(self,widget,data=None):
-    pass
+#  def bad_cb(self,widget,data=None):
+#    pass
 
-  def bad_cb(self,widget,data=None):
-    pass
+#  def finish_cb(self,widget,data=None):
+#    pass
 
-  def finish_cb(self,widget,data=None):
-    pass
-
-  def end_cb(self,widget,data=None):
-    pass
+#  def end_cb(self,widget,data=None):
+#    pass
 
   def __init__(self,state):
     self.window = gtk.Dialog('Settings',None,gtk.DIALOG_MODAL,(gtk.STOCK_OK,gtk.RESPONSE_OK))
@@ -133,64 +134,72 @@ class DialogSett:
 
     self.accentsbutton = gtk.CheckButton('Ignore polish signs')
     self.accentsbutton.set_active(state['accents'])
-    self.accentsbutton.show()
     self.window.vbox.pack_start(self.accentsbutton, False,False,0)
     self.casebutton = gtk.CheckButton('Ignore letter case')
     self.casebutton.set_active(state['case'])
-    self.casebutton.show()
     self.window.vbox.pack_start(self.casebutton,False,False,0)
     self.whitebutton = gtk.CheckButton('Ignore Whitespaces')
     self.whitebutton.set_active(state['whitespaces'])
-    self.whitebutton.show()
     self.window.vbox.pack_start(self.whitebutton,False,False,0)
 
     self.soundbutton = gtk.CheckButton('Turn off sound')
     #self.soundbutton.set_active(state['sound'])
-    self.soundbutton.connect('toggled',self.sound_cb)
-    self.soundbutton.show()
+    #self.soundbutton.connect('toggled',self.sound_cb)
+   # self.soundbutton.show()
 
     self.window.vbox.pack_start(self.soundbutton,False,False,0)
 
 
-    box = gtk.HBox(False,0)
-    entrygood = gtk.Entry()
-    button = gtk.Button('Choose file')
-    button.connect('clicked',self.good_cb,entrygood)
-    box.pack_start(entrygood,True,False,0)
-    box.pack_start(button,False,False,0)
-    label = gtk.Label('Good answer sound:')
-    self.soundbox.pack_start(label,False,False,0)
-    self.soundbox.pack_start(box,False,False,0)
-   
-    box = gtk.HBox(False,0)
-    entrybad = gtk.Entry()
-    button = gtk.Button('Choose file')
-    button.connect('clicked',self.bad_cb,entrybad)
-    box.pack_start(entrybad,True,False,0)
-    box.pack_start(button,False,False,0)
-    label = gtk.Label('Bad answer sound:')
-    self.soundbox.pack_start(label,False,False,0)
-    self.soundbox.pack_start(box,False,False,0)
+   # box = gtk.HBox(False,0)
+   # entrygood = gtk.Entry()
+   # button = gtk.Button('Choose file')
+   # button.connect('clicked',self.good_cb,entrygood)
+   # box.pack_start(entrygood,True,False,0)
+   # box.pack_start(button,False,False,0)
+   # label = gtk.Label('Good answer sound:')
+   # self.soundbox.pack_start(label,False,False,0)
+   # self.soundbox.pack_start(box,False,False,0)
+  # 
+   # box = gtk.HBox(False,0)
+   # entrybad = gtk.Entry()
+   # button = gtk.Button('Choose file')
+   # button.connect('clicked',self.bad_cb,entrybad)
+   # box.pack_start(entrybad,True,False,0)
+   # box.pack_start(button,False,False,0)
+   # label = gtk.Label('Bad answer sound:')
+   # self.soundbox.pack_start(label,False,False,0)
+   # self.soundbox.pack_start(box,False,False,0)
 
-    box = gtk.HBox(False,0)
-    entryfinish = gtk.Entry()
-    button = gtk.Button('Choose file')
-    button.connect('clicked',self.finish_cb,entryfinish)
-    box.pack_start(entryfinish,True,False,0)
-    box.pack_start(button,False,False,0)
-    label = gtk.Label('Finish sound:')
-    self.soundbox.pack_start(label,False,False,0)
-    self.soundbox.pack_start(box,False,False,0)
+   # box = gtk.HBox(False,0)
+   # entryfinish = gtk.Entry()
+   # button = gtk.Button('Choose file')
+   # button.connect('clicked',self.finish_cb,entryfinish)
+   # box.pack_start(entryfinish,True,False,0)
+   # box.pack_start(button,False,False,0)
+   # label = gtk.Label('Finish sound:')
+   # self.soundbox.pack_start(label,False,False,0)
+   # self.soundbox.pack_start(box,False,False,0)
 
-    box = gtk.HBox(False,0)
-    entryend = gtk.Entry()
-    button = gtk.Button('Choose file')
-    button.connect('clicked',self.end_cb,entryend)
-    box.pack_start(entryend,True,False,0)
-    box.pack_start(button,False,False,0)
-    label = gtk.Label('End test sound:')
-    self.soundbox.pack_start(label,False,False,0)
-    self.soundbox.pack_start(box,False,False,0)
+   # box = gtk.HBox(False,0)
+   # entryend = gtk.Entry()
+   # button = gtk.Button('Choose file')
+   # button.connect('clicked',self.end_cb,entryend)
+   # box.pack_start(entryend,True,False,0)
+   # box.pack_start(button,False,False,0)
+   # label = gtk.Label('End test sound:')
+   # self.soundbox.pack_start(label,False,False,0)
+   # self.soundbox.pack_start(box,False,False,0)
 
-    self.window.vbox.pack_start(self.soundbox,False,False,0)
+   # self.window.vbox.pack_start(self.soundbox,False,False,0)
     self.window.show_all()
+    
+class PlaySounds:
+  def __init__(self,filename): 
+    thr = threading.Thread(target=self.mainloop,args=(filename,))
+    thr.start()
+  def mainloop(self,filename):
+    if os.name == 'posix':
+      os.system('aplay {}'.format(filename))
+    elif os.name == 'nt':
+      os.system("start /min mplay32 /play /close {}".format(filename))
+      #i have no idea if this works well for windows 7
