@@ -72,8 +72,13 @@ tests'''
     self.words.voc=[]
     self.liststore.clear()
     self.window.set_title('Test Editor')
+    #TODO Ask for column names
+    self.words_dialog('','',title='Columns\' names')
+    if self.dialog.run() == gtk.RESPONSE_OK:
+      self.col1=self.entry1.get_text()
+      self.col2=self.entry2.get_text()
+      self.dialog.destroy()
 
-    
   def save_as_cb(self, widget, data=None):
     '''Saves to a file with choosen filename'''
     dialog = gtk.FileChooserDialog("Save as..",None,gtk.FILE_CHOOSER_ACTION_SAVE,\
@@ -112,15 +117,15 @@ Opis=
 Ostatnia modyfikacja=
 
 [Kolumny]
-1=
-2=
+1={}
+2={}
 
 [Do zapamiętania]
 Słówko1=Tak
 Między=-
 Słówko2=Tak
 
-[Dane]\n'''.encode('windows-1250'))
+[Dane]\n'''.format(self.col1,self.col2).encode('windows-1250'))
       for (a,b,c) in self.liststore:
         f.write('{}\xa4=\xa4{}\r\n'.format(b.encode('windows-1250'),c.encode('windows-1250')))
       f.close()
@@ -198,7 +203,7 @@ Słówko2=Tak
     '''Edit record'''
     (a,pathto) = self.selection.get_selected_rows()
     nr = pathto[0][0]
-    self.words_dialog(self.liststore[nr][1],self.liststore[nr][2])
+    self.words_dialog(self.liststore[nr][1],self.liststore[nr][2],title='Edit')
     self.dialog.set_default_response(gtk.RESPONSE_OK)
     response = self.dialog.run()
     if response == gtk.RESPONSE_OK:
@@ -214,13 +219,22 @@ Słówko2=Tak
       self.fix_numbers()
       self.changed = True
 
-  def words_dialog(self, ent1, ent2):
+  def columns_cb(self,widget,data=None):
+    self.words_dialog('','',title='Columns\' names')
+    if self.dialog.run() == gtk.RESPONSE_OK:
+      self.col1=self.entry1.get_text()
+      self.col2=self.entry2.get_text()
+      self.dialog.destroy()
+    
+
+  def words_dialog(self, ent1, ent2,title='Add word'):
     '''Makes a dialog where you can write your word pairs into'''
     self.dialog = gtk.Dialog(flags = gtk.DIALOG_MODAL,buttons=(gtk.STOCK_OK,gtk.RESPONSE_OK))
     self.dialog.set_default_response(gtk.RESPONSE_OK)
     self.dialog.set_modal(True)
     self.dialog.set_border_width(10)
     self.dialog.set_resizable(False)
+    self.dialog.set_title(title)
 
     hbox = gtk.HBox(True,15)
     hbox.show()
@@ -359,8 +373,23 @@ Słówko2=Tak
     button.set_sensitive(True)
     button.show()
 
+    button = gtk.Button()
+    image = gtk.Image()
+    image.set_from_file('gfx/colname.png')
+    image.show()
+    button.connect('clicked',self.columns_cb)
+    box1.pack_end(button,False,False,2)
+    button.add(image)
+    self.tooltips.set_tip(button,"Change columns' names")
+    button.set_sensitive(True)
+    button.show()
+
+    #TODO: Column names change button
+
     self.window.show()
     self.filename = None
     self.words = gen.Checker(None)
     self.make_table(None)
     self.changed = False
+    self.col1='Column1'
+    self.col2='Column2'

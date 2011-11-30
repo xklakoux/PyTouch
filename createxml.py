@@ -23,17 +23,6 @@ class HandleXML:
       ignores.append(doc.createElement(key))
       ignores[index].setAttribute('value',str(self.str2bool(settings[key])))
       ignore.appendChild(ignores[index])
-      #case = doc.createElement('case')
-      #case.setAttribute('value','1')
-      #ignore.appendChild(case)
-
-      #accents = doc.createElement('accents')
-      #accents.setAttribute('value','1')
-      #ignore.appendChild(accents)
-
-      #white = doc.createElement('whitespaces')
-      #white.setAttribute('value','1')
-      #ignore.appendChild(white)
 
     sounds = doc.createElement('sounds')
     sett.appendChild(sounds)

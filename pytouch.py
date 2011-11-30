@@ -38,6 +38,7 @@ class Base:
     self.wordslen = len(self.words.voc)
     self.label1.set_text(self.words.col1)
     self.label2.set_text(self.words.col2)
+    self.wordbefore = ''            #a variable that wont let you choose the same word twice
     self.start_test()
 
   def edit_callback(self,widget,data=None):
@@ -66,7 +67,10 @@ class Base:
     if not self.words.voc:      #if there are no more words
       self.shut_down()
       return 0;
-    self.checked = random.choice(self.words.voc)
+    while 1:
+      self.checked = random.choice(self.words.voc)
+      if self.checked != self.wordbefore or len(self.words.voc) == 1:
+        break
     self.ix = self.words.voc.index(self.checked)  #index number for future marking (complete, revision)
     self.showed.set_text(self.checked[self.mode])
     self.guessed.set_text('')
@@ -85,6 +89,15 @@ class Base:
       self.handlexml.create_xml(self.settings,filename='settings.xml')
     self.dialogsett.window.destroy()
 
+  def about_cb(self,widget,data=None):
+    about = gtk.AboutDialog()
+    about.set_program_name('PyTouch')
+    about.set_version('v 0.8')
+    about.set_comments('A simple learning program')
+    about.set_copyright('Artur Staniec')
+    about.run()
+    about.destroy()
+
   def its_done(self):
     '''Checks if there are more words to learn'''
     if not len(self.words.voc):    #if there are no other words
@@ -101,6 +114,7 @@ class Base:
 
   def check_callback(self,widget,data=None):
     '''Finds out if word is correct and handles statistics'''
+    self.wordbefore = self.words.voc[self.ix]
     if self.words.check(self.guessed.get_text(),self.words.voc[self.ix][self.mode-1], self.settings): #1 if self.mode is 0 and opposite
       self.words.voc.pop(self.ix)
       self.good+=1
@@ -155,8 +169,8 @@ class Base:
     self.window.connect('destroy',lambda wid: gtk.main_quit())
     self.window.connect('delete_event',lambda a1,a2:gtk.main_quit())
     mainbox=gtk.VBox(False,0)
-    box1=gtk.HBox(False,0)
-    box1.set_border_width(2)
+    boxtop=gtk.HBox(False,0)
+    boxtop.set_border_width(2)
 
     self.tooltips = gtk.Tooltips()
 
@@ -165,7 +179,7 @@ class Base:
     image.set_from_file('gfx/open.png')
     image.show()
     button.connect('clicked',self.load_test_cb)
-    box1.pack_start(button,False,False,0)
+    boxtop.pack_start(button,False,False,0)
     button.add(image)
     self.tooltips.set_tip(button,"Load test")
     button.show()
@@ -175,7 +189,7 @@ class Base:
     image.set_from_file('gfx/edit.png')
     image.show()
     button.connect('clicked',self.edit_callback)
-    box1.pack_start(button,False,False,0)
+    boxtop.pack_start(button,False,False,0)
     button.add(image)
     self.tooltips.set_tip(button,"Test editor")
     button.show()
@@ -185,16 +199,26 @@ class Base:
     image.set_from_file('gfx/sett.png')
     image.show()
     button.connect('clicked',self.settings_cb)
-    box1.pack_start(button,False,False,0)
+    boxtop.pack_start(button,False,False,0)
     button.add(image)
     self.tooltips.set_tip(button,"Settings")
     button.show()
 
-    box1.show()
+    button = gtk.Button()
+    image = gtk.Image()
+    image.set_from_file('gfx/about.png')
+    image.show()
+    button.connect('clicked',self.about_cb)
+    boxtop.pack_end(button,False,False,0)
+    button.add(image)
+    self.tooltips.set_tip(button,"About")
+    button.show()
+
+    boxtop.show()
 
     separator = gtk.HSeparator()
     separator.show()
-    mainbox.pack_start(box1,False,False,0)
+    mainbox.pack_start(boxtop,False,False,0)
     mainbox.pack_start(separator,False,False,5)
 
     self.labeltest = gtk.Label('No test set');

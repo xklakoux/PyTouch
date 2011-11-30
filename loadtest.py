@@ -30,7 +30,7 @@ vocabulary from internet'''
     dialog.set_modal(True)
 
     filter = gtk.FileFilter()
-    filter.set_name("Pytacz Master Text Files")
+    filter.set_name("PyTouch/Pytacz Master Text Files")
     filter.add_pattern("*.txt")
     dialog.add_filter(filter)
 
