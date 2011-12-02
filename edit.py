@@ -75,8 +75,8 @@ tests'''
     #TODO Ask for column names
     self.words_dialog('','',title='Columns\' names')
     if self.dialog.run() == gtk.RESPONSE_OK:
-      self.col1=self.entry1.get_text()
-      self.col2=self.entry2.get_text()
+      self.words.col1=self.entry1.get_text()
+      self.words.col2=self.entry2.get_text()
       self.dialog.destroy()
 
   def save_as_cb(self, widget, data=None):
@@ -125,7 +125,7 @@ Słówko1=Tak
 Między=-
 Słówko2=Tak
 
-[Dane]\n'''.format(self.col1,self.col2).encode('windows-1250'))
+[Dane]\n'''.format(self.words.col1,self.words.col2).encode('windows-1250'))
       for (a,b,c) in self.liststore:
         f.write('{}\xa4=\xa4{}\r\n'.format(b.encode('windows-1250'),c.encode('windows-1250')))
       f.close()
@@ -220,10 +220,10 @@ Słówko2=Tak
       self.changed = True
 
   def columns_cb(self,widget,data=None):
-    self.words_dialog('','',title='Columns\' names')
+    self.words_dialog(self.words.col1,self.words.col2,title='Columns\' names')
     if self.dialog.run() == gtk.RESPONSE_OK:
-      self.col1=self.entry1.get_text()
-      self.col2=self.entry2.get_text()
+      self.words.col1=self.entry1.get_text()
+      self.words.col2=self.entry2.get_text()
       self.dialog.destroy()
     
 
@@ -391,5 +391,5 @@ Słówko2=Tak
     self.words = gen.Checker(None)
     self.make_table(None)
     self.changed = False
-    self.col1='Column1'
-    self.col2='Column2'
+    self.words.col1='Column1'
+    self.words.col2='Column2'

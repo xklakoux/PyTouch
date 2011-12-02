@@ -124,6 +124,7 @@ cause it changes selection everytime you hit a spacebar'''
   def fetchfromnet_cb(self,widget,data=None):
     self.words = []
     self.words = gen.Checker('Internet')
+    self.goon=True
     self.make_table(self.words.voc)
 
   def delete_event(self, widget, data=None):

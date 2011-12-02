@@ -8,6 +8,7 @@ import urllib
 import re
 import random
 import os
+import time
 import threading
 
 class Checker:
@@ -148,49 +149,6 @@ class DialogSett:
    # self.soundbutton.show()
 
     self.window.vbox.pack_start(self.soundbutton,False,False,0)
-
-
-   # box = gtk.HBox(False,0)
-   # entrygood = gtk.Entry()
-   # button = gtk.Button('Choose file')
-   # button.connect('clicked',self.good_cb,entrygood)
-   # box.pack_start(entrygood,True,False,0)
-   # box.pack_start(button,False,False,0)
-   # label = gtk.Label('Good answer sound:')
-   # self.soundbox.pack_start(label,False,False,0)
-   # self.soundbox.pack_start(box,False,False,0)
-  # 
-   # box = gtk.HBox(False,0)
-   # entrybad = gtk.Entry()
-   # button = gtk.Button('Choose file')
-   # button.connect('clicked',self.bad_cb,entrybad)
-   # box.pack_start(entrybad,True,False,0)
-   # box.pack_start(button,False,False,0)
-   # label = gtk.Label('Bad answer sound:')
-   # self.soundbox.pack_start(label,False,False,0)
-   # self.soundbox.pack_start(box,False,False,0)
-
-   # box = gtk.HBox(False,0)
-   # entryfinish = gtk.Entry()
-   # button = gtk.Button('Choose file')
-   # button.connect('clicked',self.finish_cb,entryfinish)
-   # box.pack_start(entryfinish,True,False,0)
-   # box.pack_start(button,False,False,0)
-   # label = gtk.Label('Finish sound:')
-   # self.soundbox.pack_start(label,False,False,0)
-   # self.soundbox.pack_start(box,False,False,0)
-
-   # box = gtk.HBox(False,0)
-   # entryend = gtk.Entry()
-   # button = gtk.Button('Choose file')
-   # button.connect('clicked',self.end_cb,entryend)
-   # box.pack_start(entryend,True,False,0)
-   # box.pack_start(button,False,False,0)
-   # label = gtk.Label('End test sound:')
-   # self.soundbox.pack_start(label,False,False,0)
-   # self.soundbox.pack_start(box,False,False,0)
-
-   # self.window.vbox.pack_start(self.soundbox,False,False,0)
     self.window.show_all()
     
 class PlaySounds:
@@ -198,8 +156,11 @@ class PlaySounds:
     thr = threading.Thread(target=self.mainloop,args=(filename,))
     thr.start()
   def mainloop(self,filename):
+    if filename == 'sounds/TracknField_End':
+      time.sleep(1)
     if os.name == 'posix':
       os.system('aplay {}'.format(filename))
     elif os.name == 'nt':
       os.system("start /min mplay32 /play /close {}".format(filename))
       #i have no idea if this works well for windows 7
+      

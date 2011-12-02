@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 #-*- coding: windows-1250 -*-
-u"""This is a clone of a freeware program 'Pytacz Master' written by kl4q"""
+'''
+File: pytouch.py
+Author: xklakoux
+Description: This is a gtk clone of a freeware program 'Pytacz Master
+'''
 
 import pygtk
 pygtk.require('2.0')
@@ -70,7 +74,6 @@ class Base:
     self.labelrem.set_text(str(len(self.words.voc)) + "("+ str(len(self.wordsrev)) +")")
     if not self.words.voc:      #if there are no more words
       self.shut_down()
-      sleep(1)
       a = gen.PlaySounds('sounds/TracknField_End.wav')
       return 0;
     while 1:
